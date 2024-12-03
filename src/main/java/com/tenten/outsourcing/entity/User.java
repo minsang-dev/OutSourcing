@@ -2,7 +2,9 @@ package com.tenten.outsourcing.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tenten.outsourcing.common.BaseEntity;
+import com.tenten.outsourcing.config.PasswordEncoder;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class User extends BaseEntity {
   @Column(unique = true, length = 100)
   private String email;
 
+  @Convert(converter = PasswordEncoder.class)
   @Column(length = 100)
   private String password;
 
