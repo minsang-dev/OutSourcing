@@ -6,7 +6,6 @@ import com.tenten.outsourcing.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +21,9 @@ public class LoginController {
 
   @PostMapping("/sign-up")
   public ResponseEntity<UserResponseDto> signUp(
-      @RequestParam("username") String username
+      @RequestBody UserRequestDto userRequestDto
       ){
-    return null;
+    return ResponseEntity.ok().body(loginService.signUp(userRequestDto));
   }
 
   @PostMapping("/login")

@@ -3,6 +3,7 @@ package com.tenten.outsourcing.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tenten.outsourcing.common.BaseEntity;
 import com.tenten.outsourcing.config.PasswordEncoder;
+import com.tenten.outsourcing.dto.UserRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -42,4 +43,10 @@ public class User extends BaseEntity {
   @JsonFormat(pattern = "yy:MM:dd hh:mm:ss")
   private LocalDate deletedAt;
 
+  public User(UserRequestDto userRequestDto) {
+    this.email = userRequestDto.getEmail();
+    this.password = userRequestDto.getPassword();
+    this.name = userRequestDto.getName();
+    this.address = userRequestDto.getAddress();
+  }
 }
