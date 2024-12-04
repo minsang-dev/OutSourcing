@@ -1,12 +1,15 @@
 package com.tenten.outsourcing.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.common.BaseEntity;
 import com.tenten.outsourcing.config.PasswordEncoder;
 import com.tenten.outsourcing.dto.UserRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,7 +41,8 @@ public class User extends BaseEntity {
   @Column(length = 100)
   private String address;
 
-//  private Auth auth;
+  @Enumerated(value = EnumType.STRING)
+  private Auth auth;
 
   @JsonFormat(pattern = "yy:MM:dd hh:mm:ss")
   private LocalDate deletedAt;
@@ -48,5 +52,6 @@ public class User extends BaseEntity {
     this.password = userRequestDto.getPassword();
     this.name = userRequestDto.getName();
     this.address = userRequestDto.getAddress();
+    this.auth = userRequestDto.getAuth();
   }
 }
