@@ -2,15 +2,15 @@ package com.tenten.outsourcing.order.service;
 
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
+import com.tenten.outsourcing.menu.entity.Menu;
+import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
-import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.order.entity.Order;
+import com.tenten.outsourcing.order.repository.OrderRepository;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.menu.repository.MenuRepository;
-import com.tenten.outsourcing.order.repository.OrderRepository;
-import com.tenten.outsourcing.repository.UserRepository;
+import com.tenten.outsourcing.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +43,7 @@ public class OrderService {
         Store store = findMenu.getStore();
 
         // 최소 주문 금액 불충족시
-        if(findMenu.getPrice() < store.getMinAmount()) {
+        if (findMenu.getPrice() < store.getMinAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -57,7 +57,7 @@ public class OrderService {
     }
 
     /**
-     * 주문 상태 업데이트. 사장 권한을 가진 유저만 가능
+     * 주문 상태 업데이트. 해당 주문을 받은 점주만 업데이트 가능
      *
      * @param orderId 주문 식별자
      * @param loginId 로그인한 유저 식별자
@@ -67,15 +67,12 @@ public class OrderService {
     public void updateOrderStatus(Long orderId, Long loginId, DeliveryStatus status) {
 
         User findUser = userRepository.findById(loginId).orElseThrow();
-        // TODO: 로그인한 유저에게 점주 권한이 없을 때
-        /*if(!findUser.getAuth().equals(Auth.점주)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }*/
         Order findOrder = orderRepository.findById(orderId).orElseThrow();
-        // TODO: 로그인한 유저가 점주이나, 해당 주문을 받은 가게의 점주가 아닐 때
-        /*if(!findOrder.getStore().getUser().equals(findUser)) {
+
+        // 해당 주문을 받은 점주가 아닌 경우
+        if (!findOrder.getStore().getUser().equals(findUser)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }*/
+        }
 
         findOrder.updateStatus(status);
         orderRepository.save(findOrder);
