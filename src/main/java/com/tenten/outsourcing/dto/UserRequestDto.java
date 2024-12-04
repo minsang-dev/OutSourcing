@@ -1,5 +1,6 @@
 package com.tenten.outsourcing.dto;
 
+import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.config.PasswordEncoder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -15,5 +16,7 @@ public class UserRequestDto {
   private String name;
 
   private String address;
+
+  private Auth auth;
 
 }
