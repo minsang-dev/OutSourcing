@@ -12,9 +12,13 @@ import com.tenten.outsourcing.repository.OrderRepository;
 import com.tenten.outsourcing.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -82,5 +86,20 @@ public class OrderService {
         }
 
         return new OrderResponseDto(findOrder);
+    }
+
+    /**
+     * 로그인한 유저의 주문 다건 조회
+     *
+     * @param loginId 로그인한 유저 식별자
+     * @param page    페이지 번호
+     * @param size    페이지 크기
+     */
+    public List<OrderResponseDto> findAllOrders(long loginId, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<Order> allOrders = orderRepository.findAllOrdersByUserId(loginId, pageable);
+        return allOrders.stream().map(OrderResponseDto::new).toList();
     }
 }
