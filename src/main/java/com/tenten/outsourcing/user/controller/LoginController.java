@@ -5,11 +5,12 @@ import com.tenten.outsourcing.user.dto.LoginRequestDto;
 import com.tenten.outsourcing.user.dto.UserRequestDto;
 import com.tenten.outsourcing.user.dto.UserResponseDto;
 import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.user.service.LoginService;
+import com.tenten.outsourcing.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LoginController {
 
-  private final LoginService loginService;
+  private final UserService userService;
 
   @PostMapping("/sign-up")
   public ResponseEntity<UserResponseDto> signUp(
       @RequestBody UserRequestDto userRequestDto
       ){
-    return ResponseEntity.ok().body(loginService.signUp(userRequestDto));
+    return ResponseEntity.ok().body(userService.signUp(userRequestDto));
   }
 
   @PostMapping("/login")
@@ -37,7 +38,7 @@ public class LoginController {
       HttpServletRequest request
   ){
 
-    User user = loginService.checkLoginInfo(loginRequestDto);
+    User user = userService.checkLoginInfo(loginRequestDto);
 
     HttpSession session = request.getSession();
 
@@ -55,6 +56,14 @@ public class LoginController {
       session.invalidate();
     }
     return ResponseEntity.ok().body("로그아웃 되었습니다.");
+  }
+
+  @DeleteMapping("/users")
+  public ResponseEntity<String> deleteUser(
+      HttpServletRequest request
+  ){
+    HttpSession session = request.getSession();
+    return ResponseEntity.ok().body("삭제 되었습니다.");
   }
 
   @GetMapping("/test")

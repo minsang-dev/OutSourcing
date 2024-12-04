@@ -2,7 +2,7 @@ package com.tenten.outsourcing.config;
 
 import com.tenten.outsourcing.filter.AuthFilter;
 import com.tenten.outsourcing.filter.LoginFilter;
-import com.tenten.outsourcing.user.service.LoginService;
+import com.tenten.outsourcing.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final LoginService loginService;
+  private final UserService userService;
 
   @Bean
   public FilterRegistrationBean loginFilter() {
@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Bean
   public FilterRegistrationBean authFilter() {
     FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-    filterRegistrationBean.setFilter(new AuthFilter(loginService));
+    filterRegistrationBean.setFilter(new AuthFilter(userService));
     filterRegistrationBean.addUrlPatterns("/*");
     filterRegistrationBean.setOrder(3);
     return filterRegistrationBean;
