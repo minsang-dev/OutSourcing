@@ -1,36 +1,29 @@
 package com.tenten.outsourcing.entity;
 
 import com.tenten.outsourcing.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "menu") // 테이블 이름 매핑
 public class Menu extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "store_id")
-  private Store store;
+  @ManyToOne
+  @JoinColumn(name = "store_id", nullable = false)
+  private Store store; // 가게 (ManyToOne 관계))
 
   @Column(length = 25)
-  private String name;
+  private String menuName;
 
   private String menuPictureUrl;
 
@@ -39,4 +32,15 @@ public class Menu extends BaseEntity {
 
   private LocalDateTime deletedAt;
 
+  public Menu() { }
+
+  public Menu(Store store, String menuName, String menuPictureUrl, Integer price) {
+    this.store = store;
+    this.menuName = menuName;
+    this.menuPictureUrl = menuPictureUrl;
+  }
+
+  public Menu(String menuName, String menuPictureUrl, Integer price, User findUser) {
+
+  }
 }
