@@ -2,8 +2,8 @@ package com.tenten.outsourcing.filter;
 
 import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.common.LoginStatus;
-import com.tenten.outsourcing.entity.User;
-import com.tenten.outsourcing.service.LoginService;
+import com.tenten.outsourcing.user.entity.User;
+import com.tenten.outsourcing.user.service.LoginService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

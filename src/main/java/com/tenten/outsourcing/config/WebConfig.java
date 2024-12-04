@@ -2,7 +2,7 @@ package com.tenten.outsourcing.config;
 
 import com.tenten.outsourcing.filter.AuthFilter;
 import com.tenten.outsourcing.filter.LoginFilter;
-import com.tenten.outsourcing.service.LoginService;
+import com.tenten.outsourcing.user.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
