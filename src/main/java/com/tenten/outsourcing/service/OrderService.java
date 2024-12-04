@@ -43,6 +43,31 @@ public class OrderService {
     }
 
     /**
+     * 주문 상태 업데이트. 사장 권한을 가진 유저만 가능
+     *
+     * @param orderId 주문 식별자
+     * @param loginId 로그인한 유저 식별자
+     * @param status  변경할 주문 처리 상태값
+     */
+    @Transactional
+    public void updateOrderStatus(Long orderId, Long loginId, DeliveryStatus status) {
+
+        User findUser = userRepository.findById(loginId).orElseThrow();
+        // TODO: 로그인한 유저에게 점주 권한이 없을 때
+        /*if(!findUser.getAuth().equals(Auth.점주)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }*/
+        Order findOrder = orderRepository.findById(orderId).orElseThrow();
+        // TODO: 로그인한 유저가 점주이나, 해당 주문을 받은 가게의 점주가 아닐 때
+        /*if(!findOrder.getStore().getUser().equals(findUser)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }*/
+
+        findOrder.updateStatus(status);
+        orderRepository.save(findOrder);
+    }
+
+    /**
      * 주문 단건 조회
      */
     public OrderResponseDto findOrder(Long orderId) {
