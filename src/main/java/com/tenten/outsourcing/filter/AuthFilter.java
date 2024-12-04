@@ -2,6 +2,7 @@ package com.tenten.outsourcing.filter;
 
 import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
 import jakarta.servlet.Filter;
@@ -18,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.PatternMatchUtils;
 
 @Slf4j
-@RequiredArgsConstructor
 public class AuthFilter implements Filter {
 
-  private final UserService userService;
   private final String[] FOR_OWNER = {
       "/api/test/owner"
   };
@@ -37,10 +36,9 @@ public class AuthFilter implements Filter {
     HttpSession session = httpRequest.getSession(false);
 
     if(session !=null) {
-      Long userId = (Long) session.getAttribute(LoginStatus.LOGIN_USER);
-      User user = userService.findByIdOrElseThrow(userId);
+      SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
 
-      if (!isForOwner(requestURI) && !Auth.OWNER.equals(user.getAuth())) {
+      if (!isForOwner(requestURI) && !Auth.OWNER.equals(sessionDto.getAuth())) {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         servletResponse.setCharacterEncoding("UTF-8");
