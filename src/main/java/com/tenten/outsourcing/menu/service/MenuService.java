@@ -2,8 +2,10 @@ package com.tenten.outsourcing.menu.service;
 
 import com.tenten.outsourcing.menu.dto.MenuResponseDto;
 import com.tenten.outsourcing.menu.entity.Menu;
+import com.tenten.outsourcing.store.repository.StoreRepository;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
