@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OrderResponseDto {
 
+    private final Long orderId;
+
     private final Long menuId;
 
     private final int totalPrice;
@@ -21,6 +23,7 @@ public class OrderResponseDto {
     private final LocalDateTime createdAt;
 
     public OrderResponseDto(Order order) {
+        this.orderId = order.getId();
         this.menuId = order.getMenu().getId();
         this.totalPrice = order.getTotalPrice();
         this.request = order.getRequestMessage();
