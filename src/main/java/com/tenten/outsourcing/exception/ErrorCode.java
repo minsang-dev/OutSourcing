@@ -15,6 +15,8 @@ public enum ErrorCode {
   DIFFERENT_EMAIL_PASSWORD("이메일 혹은 비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
   //탈퇴한 이메일로 가입을 시도할 때 출력하는 오류 메시지
   EMAIL_DELETED("삭제된 이메일 입니다.", HttpStatus.BAD_REQUEST),
+  // 이미 삭제된 사용자가 조회 되었을 때 출력하는 오류 메시지
+  DELETED_USER("이미 삭제된 회원입니다.", HttpStatus.BAD_REQUEST),
 
   // NotFoundException
   NOT_FOUND_EMAIL("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
