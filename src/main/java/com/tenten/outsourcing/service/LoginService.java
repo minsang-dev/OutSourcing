@@ -40,4 +40,9 @@ public class LoginService {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다.");
     }
   }
+
+  public User findByIdOrElseThrow(Long userId) {
+    return loginRepository.findById(userId)
+        .orElseThrow(() -> new IllegalArgumentException("회원이 없습니다."));
+  }
 }

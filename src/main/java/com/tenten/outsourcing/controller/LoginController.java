@@ -44,9 +44,7 @@ public class LoginController {
 
     HttpSession session = request.getSession();
 
-    UserResponseDto loginUser = UserResponseDto.toDto(user);
-
-    session.setAttribute(LoginStatus.LOGIN_USER, loginUser);
+    session.setAttribute(LoginStatus.LOGIN_USER, user.getId());
 
     return ResponseEntity.ok().body("로그인 성공");
   }
@@ -64,6 +62,13 @@ public class LoginController {
 
   @GetMapping("/test")
   public ResponseEntity<UserResponseDto> test(
+
+  ){
+    return null;
+  }
+
+  @GetMapping("/test/owner")
+  public ResponseEntity<UserResponseDto> testOwner(
 
   ){
     return null;
