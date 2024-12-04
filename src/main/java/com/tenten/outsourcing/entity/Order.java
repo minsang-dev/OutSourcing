@@ -1,13 +1,8 @@
 package com.tenten.outsourcing.entity;
 
 import com.tenten.outsourcing.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.tenten.outsourcing.common.DeliveryType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "`order`")
 public class Order extends BaseEntity {
 
   @Id
@@ -34,6 +30,14 @@ public class Order extends BaseEntity {
 
   private String requestMessage;
 
-//  private DeliveryStatus status;
+  private DeliveryType type;
+
+  public Order(User user, Menu menu, Integer totalPrice, String requestMessage, DeliveryType type) {
+    this.user = user;
+    this.menu = menu;
+    this.totalPrice = totalPrice;
+    this.requestMessage = requestMessage;
+    this.type = type;
+  }
 
 }
