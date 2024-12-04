@@ -27,6 +27,10 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
     private Integer totalPrice;
 
     private String requestMessage;
@@ -35,7 +39,8 @@ public class Order extends BaseEntity {
 
     private DeliveryStatus status;
 
-    public Order(User user, Menu menu, Integer totalPrice, String requestMessage, DeliveryType type, DeliveryStatus status) {
+    public Order(Store store, User user, Menu menu, Integer totalPrice, String requestMessage, DeliveryType type, DeliveryStatus status) {
+        this.store = store;
         this.user = user;
         this.menu = menu;
         this.totalPrice = totalPrice;

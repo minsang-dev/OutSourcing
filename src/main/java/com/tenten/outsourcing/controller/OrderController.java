@@ -1,5 +1,6 @@
 package com.tenten.outsourcing.controller;
 
+import com.tenten.outsourcing.common.PagingResponseDto;
 import com.tenten.outsourcing.dto.OrderRequestDto;
 import com.tenten.outsourcing.dto.OrderResponseDto;
 import com.tenten.outsourcing.dto.OrderStatusRequestDto;
@@ -63,7 +64,7 @@ public class OrderController {
      * @param size 페이지 크기
      */
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> findAllOrders(
+    public ResponseEntity<PagingResponseDto> findAllOrders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
             // @SessionAttribute(name = "sessionKey) Long loginId
@@ -71,6 +72,6 @@ public class OrderController {
 
         // TODO: 인가 구현
         List<OrderResponseDto> allOrdersDto = orderService.findAllOrders(1L, page, size);
-        return ResponseEntity.ok().body(allOrdersDto);
+        return ResponseEntity.ok().body(new PagingResponseDto(page, size, allOrdersDto));
     }
 }

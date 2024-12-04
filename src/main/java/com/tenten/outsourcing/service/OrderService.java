@@ -6,6 +6,7 @@ import com.tenten.outsourcing.dto.OrderRequestDto;
 import com.tenten.outsourcing.dto.OrderResponseDto;
 import com.tenten.outsourcing.entity.Menu;
 import com.tenten.outsourcing.entity.Order;
+import com.tenten.outsourcing.entity.Store;
 import com.tenten.outsourcing.entity.User;
 import com.tenten.outsourcing.repository.MenuRepository;
 import com.tenten.outsourcing.repository.OrderRepository;
@@ -29,7 +30,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     /**
-     * 주문 생성
+     * 주문 생성 메서드.
+     * 최소 주문 금액을 충족하지 못하면 생성되지 않음
      *
      * @param userId 로그인한 유저 식별자
      */
@@ -38,11 +40,17 @@ public class OrderService {
 
         User findUser = userRepository.findById(userId).orElseThrow();
         Menu findMenu = menuRepository.findById(dto.getMenuId()).orElseThrow();
+        Store store = findMenu.getStore();
+
+        // 최소 주문 금액 불충족시
+        if(findMenu.getPrice() < store.getMinAmount()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         Integer totalPrice = findMenu.getPrice();
         DeliveryType type = DeliveryType.findTypeByText(dto.getType()).orElseThrow();
 
-        Order order = new Order(findUser, findMenu, totalPrice, dto.getRequest(), type, DeliveryStatus.ACCEPTED);
+        Order order = new Order(store, findUser, findMenu, totalPrice, dto.getRequest(), type, DeliveryStatus.ACCEPTED);
         Order savedOrder = orderRepository.save(order);
 
         return new OrderResponseDto(savedOrder);
