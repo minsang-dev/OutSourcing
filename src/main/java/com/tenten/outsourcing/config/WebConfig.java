@@ -10,10 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final UserService userService;
 
   @Bean
   public FilterRegistrationBean loginFilter() {
@@ -27,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Bean
   public FilterRegistrationBean authFilter() {
     FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-    filterRegistrationBean.setFilter(new AuthFilter(userService));
+    filterRegistrationBean.setFilter(new AuthFilter());
     filterRegistrationBean.addUrlPatterns("/*");
     filterRegistrationBean.setOrder(3);
     return filterRegistrationBean;

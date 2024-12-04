@@ -1,13 +1,16 @@
 package com.tenten.outsourcing.user.controller;
 
 import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.user.dto.DeleteRequestDto;
 import com.tenten.outsourcing.user.dto.LoginRequestDto;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.dto.UserRequestDto;
 import com.tenten.outsourcing.user.dto.UserResponseDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +29,7 @@ public class LoginController {
 
   @PostMapping("/sign-up")
   public ResponseEntity<UserResponseDto> signUp(
-      @RequestBody UserRequestDto userRequestDto
+      @Valid @RequestBody UserRequestDto userRequestDto
       ){
     return ResponseEntity.ok().body(userService.signUp(userRequestDto));
   }
@@ -34,15 +37,20 @@ public class LoginController {
   @PostMapping("/login")
 //  public ResponseEntity<UserResponseDto> login(
   public ResponseEntity<String> login(
-      @RequestBody LoginRequestDto loginRequestDto,
+      @Valid @RequestBody LoginRequestDto loginRequestDto,
       HttpServletRequest request
   ){
+
+    HttpSession existingSession = request.getSession(false);
+    if (existingSession != null && existingSession.getAttribute(LoginStatus.LOGIN_USER) != null) {
+      return ResponseEntity.ok().body("이미 로그인이 되어있습니다.");
+    }
 
     User user = userService.checkLoginInfo(loginRequestDto);
 
     HttpSession session = request.getSession();
 
-    session.setAttribute(LoginStatus.LOGIN_USER, user.getId());
+    session.setAttribute(LoginStatus.LOGIN_USER, new SessionDto(user.getId(), user.getAuth()));
 
     return ResponseEntity.ok().body("로그인 성공");
   }
@@ -51,7 +59,7 @@ public class LoginController {
   public ResponseEntity<String> logout(
       HttpServletRequest request
   ){
-    HttpSession session = request.getSession();
+    HttpSession session = request.getSession(false);
     if(session != null){
       session.invalidate();
     }
@@ -60,23 +68,13 @@ public class LoginController {
 
   @DeleteMapping("/users")
   public ResponseEntity<String> deleteUser(
+      @Valid @RequestBody DeleteRequestDto deleteRequestDto,
       HttpServletRequest request
   ){
     HttpSession session = request.getSession();
+    SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
+    userService.deleteUser(sessionDto.getId(), deleteRequestDto.getPassword());
+    session.invalidate();
     return ResponseEntity.ok().body("삭제 되었습니다.");
-  }
-
-  @GetMapping("/test")
-  public ResponseEntity<UserResponseDto> test(
-
-  ){
-    return null;
-  }
-
-  @GetMapping("/test/owner")
-  public ResponseEntity<UserResponseDto> testOwner(
-
-  ){
-    return null;
   }
 }

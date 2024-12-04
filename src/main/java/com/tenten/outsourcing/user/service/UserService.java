@@ -6,6 +6,7 @@ import com.tenten.outsourcing.user.dto.UserRequestDto;
 import com.tenten.outsourcing.user.dto.UserResponseDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,9 @@ public class UserService {
   }
 
   public User checkLoginInfo(LoginRequestDto loginRequestDto) {
+    checkDeletedUserByEmail(loginRequestDto.getEmail());
     User user = findByEmailOrElseThrow(loginRequestDto.getEmail());
-    isPasswordMatch(user.getPassword(), loginRequestDto.getPassword());
+    checkPasswordMatch(user.getPassword(), loginRequestDto.getPassword());
     return user;
   }
   
@@ -34,7 +36,7 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("이메일이 없습니다."));
   }
 
-  public void isPasswordMatch(String password, String inputPassword){
+  public void checkPasswordMatch(String password, String inputPassword){
     if(!passwordEncoder.matches(inputPassword, password)){
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다.");
     }
@@ -43,5 +45,19 @@ public class UserService {
   public User findByIdOrElseThrow(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("회원이 없습니다."));
+  }
+
+  public void checkDeletedUserByEmail(String email) {
+    User user = findByEmailOrElseThrow(email);
+    if(user.getDeletedAt() != null){
+      throw new IllegalArgumentException("회원이 이미 삭제되었습니다.");
+    }
+  }
+
+  public void deleteUser(Long id, String password) {
+    User user = findByIdOrElseThrow(id);
+    checkPasswordMatch(user.getPassword(), password);
+    user.setDeletedAt(LocalDateTime.now());
+    userRepository.save(user);
   }
 }
