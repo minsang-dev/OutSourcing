@@ -19,5 +19,4 @@ public class UserResponseDto {
         user.getName(),
         user.getAddress());
   }
-
 }

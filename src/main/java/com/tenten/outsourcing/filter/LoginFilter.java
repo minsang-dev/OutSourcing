@@ -19,7 +19,9 @@ public class LoginFilter implements Filter {
   };
 
   @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+  public void doFilter(
+      ServletRequest servletRequest,
+      ServletResponse servletResponse,
       FilterChain filterChain) throws IOException, ServletException {
 
     HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
