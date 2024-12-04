@@ -14,9 +14,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -44,8 +46,9 @@ public class User extends BaseEntity {
   @Enumerated(value = EnumType.STRING)
   private Auth auth;
 
+  @Setter
   @JsonFormat(pattern = "yy:MM:dd hh:mm:ss")
-  private LocalDate deletedAt;
+  private LocalDateTime deletedAt;
 
   public User(UserRequestDto userRequestDto) {
     this.email = userRequestDto.getEmail();

@@ -7,14 +7,11 @@ import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.sasl.AuthenticationException;
 import java.util.List;
 
 @Service
@@ -24,10 +21,9 @@ public class StoreService {
     private final UserRepository userRepository;
 
     @Transactional
-    public StoreResponseDto create(Long userId, StoreRequestDto requestDto) throws Exception {
+    public StoreResponseDto create(Long userId, StoreRequestDto requestDto) {
 
         User findUser = userRepository.findById(userId).orElseThrow();
-
         List<Store> stores = storeRepository.findByUserId(userId);
 
         if (!Auth.OWNER.equals(findUser.getAuth())) {
@@ -42,4 +38,10 @@ public class StoreService {
 
     }
 
+    public List<StoreResponseDto> findByName(String name, Pageable pageable) {
+        List<StoreResponseDto> storeResponseDtoPage;
+        storeResponseDtoPage = storeRepository.findByNameLike(name, pageable).stream().map(StoreResponseDto::new).toList();
+
+        return storeResponseDtoPage;
+    }
 }
