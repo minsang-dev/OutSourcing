@@ -12,7 +12,9 @@ import com.tenten.outsourcing.repository.OrderRepository;
 import com.tenten.outsourcing.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -68,11 +70,17 @@ public class OrderService {
     }
 
     /**
-     * 주문 단건 조회
+     * 주문 단건 조회. 자신의 주문 내역만 조회 가능
+     *
+     * @param loginId 로그인한 유저
      */
-    public OrderResponseDto findOrder(Long orderId) {
+    public OrderResponseDto findOrder(Long orderId, Long loginId) {
 
         Order findOrder = orderRepository.findById(orderId).orElseThrow();
+        if (!findOrder.getUser().getId().equals(loginId)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
         return new OrderResponseDto(findOrder);
     }
 }

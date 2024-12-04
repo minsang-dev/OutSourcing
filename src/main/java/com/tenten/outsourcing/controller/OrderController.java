@@ -24,7 +24,7 @@ public class OrderController {
             @RequestBody OrderRequestDto dto
             // @SessionAttribute(name = "sessionKey") Long loginId
     ) {
-        // TODO: 세션 로그인 구현 후 수정
+        // TODO: 인증 인가 구현
         OrderResponseDto orderDto = orderService.createOrder(dto, 1L);
         return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
     }
@@ -46,8 +46,11 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> findOrder(
             @PathVariable Long orderId
+            // @SessionAttribute(name = "sessionKey) Long loginId
     ) {
-        OrderResponseDto orderDto = orderService.findOrder(orderId);
+
+        // TODO: 인증 인가 구현
+        OrderResponseDto orderDto = orderService.findOrder(orderId, 1L);
         return ResponseEntity.ok().body(orderDto);
     }
 }
