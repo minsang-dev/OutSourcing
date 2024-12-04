@@ -44,4 +44,12 @@ public class Review extends BaseEntity {
   private Integer rating;
 
   private String content;
+
+  public Review(User user, Store store, Order order, Integer rating, String content) {
+    this.user = user;
+    this.store = store;
+    this.order = order;
+    this.rating = rating;
+    this.content = content;
+  }
 }

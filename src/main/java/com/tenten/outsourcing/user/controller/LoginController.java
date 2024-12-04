@@ -1,6 +1,9 @@
 package com.tenten.outsourcing.user.controller;
 
+import static com.tenten.outsourcing.exception.ErrorCode.ALREADY_LOGIN;
+
 import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.user.dto.DeleteRequestDto;
 import com.tenten.outsourcing.user.dto.LoginRequestDto;
 import com.tenten.outsourcing.user.dto.SessionDto;
@@ -43,7 +46,7 @@ public class LoginController {
 
     HttpSession existingSession = request.getSession(false);
     if (existingSession != null && existingSession.getAttribute(LoginStatus.LOGIN_USER) != null) {
-      return ResponseEntity.ok().body("이미 로그인이 되어있습니다.");
+      throw new NoAuthorizedException(ALREADY_LOGIN);
     }
 
     User user = userService.checkLoginInfo(loginRequestDto);
