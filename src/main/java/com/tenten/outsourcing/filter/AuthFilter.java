@@ -3,7 +3,7 @@ package com.tenten.outsourcing.filter;
 import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.user.service.LoginService;
+import com.tenten.outsourcing.user.service.UserService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +21,7 @@ import org.springframework.util.PatternMatchUtils;
 @RequiredArgsConstructor
 public class AuthFilter implements Filter {
 
-  private final LoginService loginService;
+  private final UserService userService;
   private final String[] FOR_OWNER = {
       "/api/test/owner"
   };
@@ -38,7 +38,7 @@ public class AuthFilter implements Filter {
 
     if(session !=null) {
       Long userId = (Long) session.getAttribute(LoginStatus.LOGIN_USER);
-      User user = loginService.findByIdOrElseThrow(userId);
+      User user = userService.findByIdOrElseThrow(userId);
 
       if (!isForOwner(requestURI) && !Auth.OWNER.equals(user.getAuth())) {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
