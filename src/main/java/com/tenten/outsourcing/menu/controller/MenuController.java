@@ -1,9 +1,6 @@
 package com.tenten.outsourcing.menu.controller;
 
-import com.tenten.outsourcing.menu.dto.MenuRequestDto;
-import com.tenten.outsourcing.menu.dto.MenuResponseDto;
-import com.tenten.outsourcing.menu.dto.MenuUpdateRequestDto;
-import com.tenten.outsourcing.menu.dto.MenuUpdateResponseDto;
+import com.tenten.outsourcing.menu.dto.*;
 import com.tenten.outsourcing.menu.service.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +37,7 @@ public class MenuController {
     }
 
     // 메뉴 수정
-    @PutMapping("/menuId")
+    @PutMapping("/{menuId}")
     public ResponseEntity<MenuUpdateResponseDto> updateMenu(
             HttpServletRequest request,
             @PathVariable Long storeId,
@@ -53,11 +50,23 @@ public class MenuController {
                 menuId,
                 requestDto.getMenuName(),
                 requestDto.getMenuPictureUrl(),
-                requestDto.getPrice(),
-                requestDto.getPassword()
+                requestDto.getPrice()
         );
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 메뉴 삭제
+    @DeleteMapping("/{menuId}")
+    public ResponseEntity<MenuResponseDto> deleteMenu(
+            HttpServletRequest request,
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @RequestBody MenuDeleteRequestDto requestDto
+    ) {
+        menuService.deleteMenu(request, storeId, menuId, requestDto.getPassword());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -56,5 +56,9 @@ public class Menu extends BaseEntity {
     this.price = price;
   }
 
+  public void deleteMenu() {
+    this.deletedAt = LocalDateTime.now();
+  }
+
 
 }
