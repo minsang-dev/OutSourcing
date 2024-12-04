@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -31,7 +33,7 @@ public class OrderService {
 
     /**
      * 주문 생성 메서드.
-     * 최소 주문 금액을 충족하지 못하면 생성되지 않음
+     * 최소 주문 금액 불충족 또는 운영 시간 외일 때 생성되지 않음
      *
      * @param userId 로그인한 유저 식별자
      */
@@ -41,6 +43,13 @@ public class OrderService {
         User findUser = userRepository.findById(userId).orElseThrow();
         Menu findMenu = menuRepository.findById(dto.getMenuId()).orElseThrow();
         Store store = findMenu.getStore();
+
+        // 가게 운영 시간이 아닐시
+        if (LocalTime.now().isAfter(store.getCloseTime().toLocalTime())
+                || LocalTime.now().isBefore(store.getOpenTime().toLocalTime())
+        ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         // 최소 주문 금액 불충족시
         if (findMenu.getPrice() < store.getMinAmount()) {
