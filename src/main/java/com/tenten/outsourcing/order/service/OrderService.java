@@ -2,6 +2,8 @@ package com.tenten.outsourcing.order.service;
 
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
+import com.tenten.outsourcing.exception.InvalidInputException;
+import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.order.dto.OrderRequestDto;
@@ -19,19 +21,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalTime;
 import java.util.List;
+
+import static com.tenten.outsourcing.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final OrderRepository orderRepository;
+
+    // TODO: Service 사용하도록 수정
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
-    private final OrderRepository orderRepository;
 
     /**
      * 주문 생성 메서드.
-     * 최소 주문 금액을 충족하지 못하면 생성되지 않음
+     * 최소 주문 금액 불충족 또는 운영 시간 외일 때 생성되지 않음
      *
      * @param userId 로그인한 유저 식별자
      */
@@ -42,9 +49,16 @@ public class OrderService {
         Menu findMenu = menuRepository.findById(dto.getMenuId()).orElseThrow();
         Store store = findMenu.getStore();
 
+        // 가게 운영 시간이 아닐시
+        if (LocalTime.now().isAfter(store.getCloseTime().toLocalTime())
+                || LocalTime.now().isBefore(store.getOpenTime().toLocalTime())
+        ) {
+            throw new InvalidInputException(STORE_CLOSED);
+        }
+
         // 최소 주문 금액 불충족시
         if (findMenu.getPrice() < store.getMinAmount()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(MIN_AMOUNT_NOT_MET);
         }
 
         Integer totalPrice = findMenu.getPrice();
@@ -67,7 +81,7 @@ public class OrderService {
     public void updateOrderStatus(Long orderId, Long loginId, DeliveryStatus status) {
 
         User findUser = userRepository.findById(loginId).orElseThrow();
-        Order findOrder = orderRepository.findById(orderId).orElseThrow();
+        Order findOrder = findOrderByIdOrElseThrow(orderId);
 
         // 해당 주문을 받은 점주가 아닌 경우
         if (!findOrder.getStore().getUser().equals(findUser)) {
@@ -85,7 +99,7 @@ public class OrderService {
      */
     public OrderResponseDto findOrder(Long orderId, Long loginId) {
 
-        Order findOrder = orderRepository.findById(orderId).orElseThrow();
+        Order findOrder = findOrderByIdOrElseThrow(orderId);
         if (!findOrder.getUser().getId().equals(loginId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
@@ -106,5 +120,17 @@ public class OrderService {
 
         List<Order> allOrders = orderRepository.findAllOrdersByUserId(loginId, pageable);
         return allOrders.stream().map(OrderResponseDto::new).toList();
+    }
+
+    /**
+     * 주문 Id 값을 통해 주문을 찾고, 없는 경우 예외 throw
+     *
+     * @param orderId 주문 식별자
+     * @return 주문
+     */
+    public Order findOrderByIdOrElseThrow(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException(NOT_FOUND_ORDER)
+        );
     }
 }
