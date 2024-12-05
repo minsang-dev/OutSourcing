@@ -1,6 +1,7 @@
 package com.tenten.outsourcing.store.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,13 +15,13 @@ public class StoreRequestDto {
     @NotBlank
     private String address;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime openTime;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime closeTime;
 
-    @NotBlank
+    @NotNull
     private Integer minAmount;
 
     @NotBlank
