@@ -6,6 +6,7 @@ import com.tenten.outsourcing.store.dto.StoreResponseDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateResponseDto;
 import com.tenten.outsourcing.store.service.StoreService;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,10 +35,10 @@ public class StoreController {
 
     @PostMapping("/stores")
     public ResponseEntity<StoreResponseDto> create(
-            @SessionAttribute(name = "LOGIN_USER", required = false) Long userId,
+            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
             @Valid @RequestBody StoreRequestDto requestDto
     ) {
-        return new ResponseEntity<>(storeService.create(userId, requestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(storeService.create(session, requestDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/stores")
@@ -55,10 +56,10 @@ public class StoreController {
 
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateById(
-            @SessionAttribute(name = "LOGIN_USER", required = false) Long userId,
+            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
             @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
     ) {
-        return new ResponseEntity<>(storeService.updateById(userId, storeId, requestDto), HttpStatus.OK);
+        return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
     }
 
 }

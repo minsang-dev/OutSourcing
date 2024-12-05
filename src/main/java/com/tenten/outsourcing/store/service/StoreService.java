@@ -13,6 +13,7 @@ import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateResponseDto;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,10 @@ public class StoreService {
     private final MenuRepository menuRepository;
 
     @Transactional
-    public StoreResponseDto create(Long userId, StoreRequestDto requestDto) {
+    public StoreResponseDto create(SessionDto session, StoreRequestDto requestDto) {
 
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(NO_SESSION));
-        List<Store> stores = storeRepository.findByUserId(userId);
+        User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
+        List<Store> stores = storeRepository.findByUserId(session.getId());
 
         if (!Auth.OWNER.equals(findUser.getAuth())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
@@ -69,14 +70,14 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreUpdateResponseDto updateById(Long userId, Long storeId, StoreUpdateRequestDto requestDto) {
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(NO_SESSION));
+    public StoreUpdateResponseDto updateById(SessionDto session, Long storeId, StoreUpdateRequestDto requestDto) {
+        User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
 
         if (!Auth.OWNER.equals(findUser.getAuth())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
-        List<Store> ownStores = storeRepository.findByUserId(userId);
+        List<Store> ownStores = storeRepository.findByUserId(session.getId());
 
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
 
