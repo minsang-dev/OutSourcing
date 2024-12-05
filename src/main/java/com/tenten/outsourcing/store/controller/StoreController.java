@@ -1,5 +1,6 @@
 package com.tenten.outsourcing.store.controller;
 
+import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
 import com.tenten.outsourcing.store.dto.StoreResponseDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
@@ -7,6 +8,7 @@ import com.tenten.outsourcing.store.dto.StoreUpdateResponseDto;
 import com.tenten.outsourcing.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -31,18 +33,31 @@ public class StoreController {
     private final StoreService storeService;
 
     @PostMapping("/stores")
-    public ResponseEntity<StoreResponseDto> create(@SessionAttribute(name = "LOGIN_USER", required = false) Long userId, @Valid @RequestBody StoreRequestDto requestDto) {
-
+    public ResponseEntity<StoreResponseDto> create(
+            @SessionAttribute(name = "LOGIN_USER", required = false) Long userId,
+            @Valid @RequestBody StoreRequestDto requestDto
+    ) {
         return new ResponseEntity<>(storeService.create(userId, requestDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/stores")
-    public ResponseEntity<List<StoreResponseDto>> findByName(@RequestParam String name, @PageableDefault(page = 1) Pageable pageable) {
+    public ResponseEntity<List<StoreResponseDto>> findByName(
+            @RequestParam String name,
+            @PageableDefault(page = 1) Pageable pageable
+    ) {
         return new ResponseEntity<>(storeService.findByName(name, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/stores/{storeId}")
+    public ResponseEntity<StoreDetailResponseDto> findById(@PathVariable Long storeId) {
+        return new ResponseEntity<>(storeService.findById(storeId), HttpStatus.OK);
+    }
+
     @PatchMapping("/stores/{storeId}")
-    public ResponseEntity<StoreUpdateResponseDto> updateById(@SessionAttribute(name = "LOGIN_USER", required = false) Long userId, @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto) {
+    public ResponseEntity<StoreUpdateResponseDto> updateById(
+            @SessionAttribute(name = "LOGIN_USER", required = false) Long userId,
+            @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
+    ) {
         return new ResponseEntity<>(storeService.updateById(userId, storeId, requestDto), HttpStatus.OK);
     }
 

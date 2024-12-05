@@ -4,6 +4,9 @@ import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
+import com.tenten.outsourcing.menu.entity.Menu;
+import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
 import com.tenten.outsourcing.store.dto.StoreResponseDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
@@ -27,6 +30,7 @@ import static com.tenten.outsourcing.exception.ErrorCode.*;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
 
     @Transactional
     public StoreResponseDto create(Long userId, StoreRequestDto requestDto) {
@@ -53,6 +57,15 @@ public class StoreService {
         storeResponseDtoPage = storeRepository.findByNameLike(name, pageable).stream().map(StoreResponseDto::new).toList();
 
         return storeResponseDtoPage;
+    }
+
+    @Transactional
+    public StoreDetailResponseDto findById(Long storeId) {
+        Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+
+        List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
+
+        return new StoreDetailResponseDto(findStore, allMenu);
     }
 
     @Transactional
