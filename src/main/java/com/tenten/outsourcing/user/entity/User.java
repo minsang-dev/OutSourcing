@@ -1,7 +1,7 @@
 package com.tenten.outsourcing.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tenten.outsourcing.common.Auth;
+import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.common.BaseEntity;
 import com.tenten.outsourcing.config.PasswordEncoder;
 import com.tenten.outsourcing.user.dto.UserRequestDto;
@@ -13,7 +13,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,7 +43,7 @@ public class User extends BaseEntity {
   private String address;
 
   @Enumerated(value = EnumType.STRING)
-  private Auth auth;
+  private Role role;
 
   @Setter
   @JsonFormat(pattern = "yy:MM:dd hh:mm:ss")
@@ -55,6 +54,6 @@ public class User extends BaseEntity {
     this.password = userRequestDto.getPassword();
     this.name = userRequestDto.getName();
     this.address = userRequestDto.getAddress();
-    this.auth = userRequestDto.getAuth();
+    this.role = userRequestDto.getRole();
   }
 }

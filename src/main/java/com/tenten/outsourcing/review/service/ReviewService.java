@@ -13,6 +13,7 @@ import com.tenten.outsourcing.store.service.StoreService;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -38,13 +39,14 @@ public class ReviewService {
 
         User user = userService.findByIdOrElseThrow(userId);
         Order order = orderService.findOrderByIdOrElseThrow(reviewRequestDto.getOrderId());
-        Store store = new Store();
-        if (DeliveryStatus.DELIVERED.equals(order.getStatus())) {
+        Store store = storeService.findById(order.getStore().getId());
+        if (!DeliveryStatus.DELIVERED.equals(order.getStatus())) {
             throw new NoAuthorizedException(NO_DELIVERY_ALREADY);
         }
         Review review = new Review(user, store, order, reviewRequestDto.getRating(), reviewRequestDto.getContent());
         reviewRepository.save(review);
         return new ReviewResponseDto(
+                review.getUser().getName(),
                 review.getRating(),
                 review.getContent()
         );
@@ -52,41 +54,34 @@ public class ReviewService {
 
     public List<ReviewResponseDto> getAll(Long userId, Long orderId, Integer lowRating, Integer highRating, Boolean sortRating, Pageable pageable) {
 
-        Order order = orderService.findOrderByIdOrElseThrow(userId);
+        Order order = orderService.findOrderByIdOrElseThrow(orderId);
 
         String query = "select r "
                 + "from Review r "
-                + "where r.user.id != " + userId + " ";
+                + "where r.user.id != " + userId + " "
+            + "and r.store.id = " + order.getStore().getId() + " ";
+        query += " and r.rating between " + lowRating + " and " + highRating + " ";
 
-        if (lowRating != null && highRating != null) {
-            query += " and r.rating between " + lowRating + " and " + highRating + " ";
-        } else if (lowRating != null) {
-            query += " and r.rating >= " + lowRating + " ";
-        } else if (highRating != null) {
-            query += " and r.rating <= " + highRating + " ";
-        }
-        query += "group by r.store.id";
-        if (Boolean.TRUE.equals(sortRating)) {
+//        if (lowRating != null && highRating != null) {
+//            query += " and r.rating between " + lowRating + " and " + highRating + " ";
+//        } else if (lowRating != null) {
+//            query += " and r.rating >= " + lowRating + " ";
+//        } else if (highRating != null) {
+//            query += " and r.rating <= " + highRating + " ";
+//        }
+        if (sortRating) {
             query += " order by r.rating desc, r.createdAt desc ";
         } else {
             query += " order by r.createdAt desc ";
         }
 
         List<Review> reviewList = entityManager.createQuery(query, Review.class)
-                .setFirstResult(pageable.getPageNumber())
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
 
         return reviewList.stream()
                 .map(ReviewResponseDto::toDto)
                 .toList();
-    }
-
-    private Pageable checkSortByRating(boolean sortRating, Pageable pageable) {
-        if (sortRating) {
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                    Sort.by("rating").descending().and(Sort.by("createdAt").descending()));
-        }
-        return pageable;
     }
 }

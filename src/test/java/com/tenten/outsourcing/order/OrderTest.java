@@ -1,7 +1,7 @@
 package com.tenten.outsourcing.order;
 
 
-import com.tenten.outsourcing.common.Auth;
+import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
 import com.tenten.outsourcing.menu.entity.Menu;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.core.convert.support.DefaultConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +30,8 @@ public class OrderTest {
 
      @BeforeEach
      void setup(){
-         owner = new User(1L, "email@gmail.com", "1234", "owner", "address", Auth.OWNER, null);
-         client = new User(2L, "email2@gmail.com", "1234", "user", "address", Auth.USER, null);
+         owner = new User(1L, "email@gmail.com", "1234", "owner", "address", Role.OWNER, null);
+         client = new User(2L, "email2@gmail.com", "1234", "user", "address", Role.USER, null);
          menu = new Menu(1L, store, "menuNmae", null, 10000, null);
          menu = new Menu(2L, store, "menuNmae", null, 20000, null);
          order = new Order(store, client, menu, 15000, "요청사항", DeliveryType.DELIVERY, DeliveryStatus.ACCEPTED);

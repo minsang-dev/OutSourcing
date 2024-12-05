@@ -8,6 +8,7 @@ import com.tenten.outsourcing.user.dto.SessionDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +33,10 @@ public class ReviewController {
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<List<ReviewResponseDto>> getAll(
             @PathVariable Long orderId,
-            @RequestParam Integer lowRating,
-            @RequestParam Integer highRating,
-            @RequestParam Boolean sortRating,
-            Pageable pageable,
+            @RequestParam(required = false) Integer lowRating,
+            @RequestParam(required = false) Integer highRating,
+            @RequestParam(required = false) Boolean sortRating,
+            @PageableDefault(size = 10, page = 0) Pageable pageable,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
         lowRating = lowRating != null ? lowRating : 0;
@@ -44,4 +45,14 @@ public class ReviewController {
         List<ReviewResponseDto> list = reviewService.getAll(session.getId(), orderId, lowRating, highRating, sortRating, pageable);
         return ResponseEntity.ok().body(list);
     }
+
+    // 사장 답글
+//    @PostMapping("/comments")
+//    public ResponseEntity<ReviewResponseDto> comment(
+//        @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+//        @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
+//    ){
+//        ReviewResponseDto reviewResponseDto = reviewRequestDto.saveComment(reviewRequestDto, session.getId());
+//        return ResponseEntity.ok().body(reviewResponseDto);
+//    }
 }

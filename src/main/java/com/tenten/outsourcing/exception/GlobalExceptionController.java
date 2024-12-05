@@ -1,8 +1,12 @@
 package com.tenten.outsourcing.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -38,14 +42,14 @@ public class GlobalExceptionController {
 
   //자바
   @ExceptionHandler
-  public ResponseEntity<String> constrainViolationException(ConstraintViolationException e) {
-    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+  public ResponseEntity<ExceptionResponseDto> constrainViolationException(ConstraintViolationException e) {
+    return new ResponseEntity<>(new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage()), HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+  public ResponseEntity<ExceptionResponseDto> methodArgumentNotValidException(MethodArgumentNotValidException e) {
     String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-    return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(new ExceptionResponseDto(HttpStatus.BAD_REQUEST, message), HttpStatus.BAD_REQUEST);
   }
 
 //  @ExceptionHandler
@@ -55,5 +59,4 @@ public class GlobalExceptionController {
 //  public ResponseEntity<String> constraintViolationException(Exception e) {
 //    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 //  }
-
 }
