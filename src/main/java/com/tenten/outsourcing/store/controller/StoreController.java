@@ -38,8 +38,8 @@ public class StoreController {
     }
 
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<StoreDetailResponseDto> findById(@PathVariable Long storeId) {
-        return new ResponseEntity<>(storeService.findById(storeId), HttpStatus.OK);
+    public ResponseEntity<StoreDetailResponseDto> findDetailById(@PathVariable Long storeId) {
+        return new ResponseEntity<>(storeService.findDetailById(storeId), HttpStatus.OK);
     }
 
     @PatchMapping("/stores/{storeId}")
@@ -48,6 +48,12 @@ public class StoreController {
             @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/stores/{storeId}")
+    public ResponseEntity<Void> deleteById(@SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session, @PathVariable Long storeId) {
+        storeService.deleteById(session, storeId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
