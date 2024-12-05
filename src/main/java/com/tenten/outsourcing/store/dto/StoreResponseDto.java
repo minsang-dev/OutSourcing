@@ -4,6 +4,7 @@ import com.tenten.outsourcing.store.entity.Store;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 public class StoreResponseDto {
@@ -16,9 +17,9 @@ public class StoreResponseDto {
 
     private String address;
 
-    private LocalDateTime openTime;
+    private LocalTime openTime;
 
-    private LocalDateTime closeTime;
+    private LocalTime closeTime;
 
     private Integer minAmount;
 

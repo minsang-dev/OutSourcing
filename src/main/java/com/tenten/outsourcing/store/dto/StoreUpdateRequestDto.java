@@ -3,14 +3,15 @@ package com.tenten.outsourcing.store.dto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 public class StoreUpdateRequestDto {
     private String name;
 
-    private LocalDateTime openTime;
+    private LocalTime openTime;
 
-    private LocalDateTime closeTime;
+    private LocalTime closeTime;
 
     private Integer minAmount;
 
