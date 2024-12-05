@@ -1,6 +1,9 @@
 package com.tenten.outsourcing.review.service;
 
-import com.tenten.outsourcing.order.dto.OrderResponseDto;
+import static com.tenten.outsourcing.exception.ErrorCode.NO_DELIVERY_ALREADY;
+
+import com.tenten.outsourcing.common.DeliveryStatus;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.order.entity.Order;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.review.dto.ReviewRequestDto;
@@ -33,10 +36,11 @@ public class ReviewService {
   public ReviewResponseDto save(@Valid ReviewRequestDto reviewRequestDto, Long userId) {
 
     User user = userService.findByIdOrElseThrow(userId);
-//    OrderResponseDto orderResponseDto = orderService.findOrder(reviewRequestDto.getOrderId(), userId);
-    Order order = null;
-//    Store store = storeService
-    Store store = null;
+    Order order = orderService.findOrderByIdOrElseThrow(reviewRequestDto.getOrderId());
+    Store store = new Store();
+    if(DeliveryStatus.DELIVERED.equals(order.getStatus())){
+      throw new NoAuthorizedException(NO_DELIVERY_ALREADY);
+    }
     Review review = new Review(user, store, order, reviewRequestDto.getRating(), reviewRequestDto.getContent());
     reviewRepository.save(review);
     return new ReviewResponseDto(
@@ -47,8 +51,7 @@ public class ReviewService {
 
   public List<ReviewResponseDto> getAll(Long userId, Long orderId, Integer lowRating, Integer highRating, Boolean sortRating, Pageable pageable) {
 
-//    Order order = orderService.findOrder(userId, orderId);
-    Order order = null;
+    Order order = orderService.findOrderByIdOrElseThrow(userId);
 
     String query = "select r "
         + "from Review r "
