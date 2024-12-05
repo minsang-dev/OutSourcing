@@ -71,14 +71,13 @@ public class OrderService {
     }
 
     /**
-     * 주문 상태 업데이트. 해당 주문을 받은 점주만 업데이트 가능
+     * 주문 상태를 다음 단계로 업데이트. 해당 주문을 받은 점주만 업데이트 가능
      *
      * @param orderId 주문 식별자
      * @param loginId 로그인한 유저 식별자
-     * @param status  변경할 주문 처리 상태값
      */
     @Transactional
-    public void updateOrderStatus(Long orderId, Long loginId, DeliveryStatus status) {
+    public void updateOrderStatus(Long orderId, Long loginId) {
 
         User findUser = userRepository.findById(loginId).orElseThrow();
         Order findOrder = findOrderByIdOrElseThrow(orderId);
@@ -88,7 +87,9 @@ public class OrderService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        findOrder.updateStatus(status);
+        DeliveryStatus nextStatus = DeliveryStatus.findNextStatus(findOrder.getStatus());
+
+        findOrder.updateStatus(nextStatus);
         orderRepository.save(findOrder);
     }
 
