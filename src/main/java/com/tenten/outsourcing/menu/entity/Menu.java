@@ -59,6 +59,4 @@ public class Menu extends BaseEntity {
   public void deleteMenu() {
     this.deletedAt = LocalDateTime.now();
   }
-
-
 }
