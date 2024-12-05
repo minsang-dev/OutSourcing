@@ -38,8 +38,10 @@ public class Order extends BaseEntity {
 
     private String requestMessage;
 
+    @Enumerated(value = EnumType.STRING)
     private DeliveryType type;
 
+    @Enumerated(value = EnumType.STRING)
     private DeliveryStatus status;
 
     public Order(Store store, User user, Menu menu, Integer totalPrice, String requestMessage, DeliveryType type, DeliveryStatus status) {
