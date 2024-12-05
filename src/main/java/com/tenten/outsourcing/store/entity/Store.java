@@ -3,6 +3,7 @@ package com.tenten.outsourcing.store.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tenten.outsourcing.common.BaseEntity;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
+import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
 import com.tenten.outsourcing.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,4 +61,12 @@ public class Store extends BaseEntity {
       this.openTime = requestDto.getOpenTime();
       this.closeTime = requestDto.getCloseTime();
   }
+
+    public void updateStoreInformation(StoreUpdateRequestDto requestDto) {
+      this.name = requestDto.getName();
+      this.openTime = requestDto.getOpenTime();
+      this.closeTime = requestDto.getCloseTime();
+      this.minAmount = requestDto.getMinAmount();
+      this.storeImageUrl = requestDto.getStoreImageUrl();
+    }
 }
