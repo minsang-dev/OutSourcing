@@ -6,8 +6,6 @@ import com.tenten.outsourcing.exception.InvalidInputException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-
 @Getter
 @RequiredArgsConstructor
 public enum DeliveryType {
