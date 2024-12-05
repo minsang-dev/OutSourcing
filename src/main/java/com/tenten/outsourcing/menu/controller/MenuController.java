@@ -1,9 +1,10 @@
 package com.tenten.outsourcing.menu.controller;
 
+import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.menu.dto.*;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +19,19 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    // 메뉴 생성
+    /**
+     * 메뉴 생성
+     */
     @PostMapping
     public ResponseEntity<MenuResponseDto> createMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
-            @RequestBody MenuRequestDto requestDto
+            @RequestBody MenuRequestDto requestDto,
+            @SessionAttribute(name= LoginStatus.LOGIN_USER)SessionDto session
 
-    ) {
+            ) {
 
         MenuResponseDto responseDto = menuService.createMenu(
-                request,
+                session.getId(),
                 storeId,
                 requestDto.getMenuName(),
                 requestDto.getMenuPictureUrl(),
@@ -39,7 +42,9 @@ public class MenuController {
 
     }
 
-    // 메뉴 다건 조회
+    /**
+     * 로그인한 유저의 메뉴 조회
+     */
     @GetMapping
     public ResponseEntity<List<Menu>> getMenuByStoreId(@PathVariable Long storeId) {
         List<Menu> menus = menuService.getMenusByStoreId(storeId);
@@ -48,16 +53,20 @@ public class MenuController {
 
     }
 
-    // 메뉴 수정
+    /**
+     * 메뉴 업데이트
+     * 해당 가게의 점주만 업데이트 가능
+     *
+     */
     @PutMapping("/{menuId}")
     public ResponseEntity<MenuUpdateResponseDto> updateMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuUpdateRequestDto requestDto
+            @RequestBody MenuUpdateRequestDto requestDto,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER)SessionDto session
     ) {
         MenuUpdateResponseDto responseDto = menuService.updateMenu(
-                request,
+                session.getId(),
                 storeId,
                 menuId,
                 requestDto.getMenuName(),
@@ -68,15 +77,17 @@ public class MenuController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    // 메뉴 삭제
+    /**
+     * 메뉴 삭제
+     */
     @DeleteMapping("/{menuId}")
     public ResponseEntity<MenuResponseDto> deleteMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuDeleteRequestDto requestDto
+            @RequestBody MenuDeleteRequestDto requestDto,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER)SessionDto session
     ) {
-        menuService.deleteMenu(request, storeId, menuId, requestDto.getPassword());
+        menuService.deleteMenu(session.getId(), storeId, menuId, requestDto.getPassword());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
