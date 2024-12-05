@@ -12,6 +12,8 @@ public class OrderResponseDto {
 
     private final Long orderId;
 
+    private final Long storeId;
+
     private final Long menuId;
 
     private final int totalPrice;
@@ -24,6 +26,7 @@ public class OrderResponseDto {
 
     public OrderResponseDto(Order order) {
         this.orderId = order.getId();
+        this.storeId = order.getStore().getId();
         this.menuId = order.getMenu().getId();
         this.totalPrice = order.getTotalPrice();
         this.request = order.getRequestMessage();

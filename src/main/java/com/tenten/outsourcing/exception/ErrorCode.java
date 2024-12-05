@@ -21,6 +21,7 @@ public enum ErrorCode {
   STORE_CLOSED("가게 운영 시간이 아닙니다.", HttpStatus.BAD_REQUEST),
   // 최소 주문 금액을 채우지 않았을 때
   MIN_AMOUNT_NOT_MET("최소 주문 금액을 채워야 합니다.", HttpStatus.BAD_REQUEST),
+  INVALID_ORDER_TYPE("올바른 주문 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
   STORE_REGISTRATION_LIMITED("운영중인 가게는 3개 까지만 등록 가능합니다.", HttpStatus.BAD_REQUEST),
 
   // NotFoundException

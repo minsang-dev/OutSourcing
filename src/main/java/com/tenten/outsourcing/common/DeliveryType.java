@@ -1,11 +1,10 @@
 package com.tenten.outsourcing.common;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.tenten.outsourcing.exception.ErrorCode;
+import com.tenten.outsourcing.exception.InvalidInputException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
@@ -15,12 +14,18 @@ public enum DeliveryType {
 
     private final String text;
 
-    public static Optional<DeliveryType> findTypeByText(String text) {
-        for(DeliveryType d :DeliveryType.values()) {
-            if(d.getText().equals(text)) {
-                return Optional.of(d);
+    /**
+     * String으로 들어온 요청값을 {@link DeliveryType}으로 변경
+     *
+     * @param type 입력받은 type
+     */
+    @JsonCreator
+    public DeliveryType from(String type) {
+        for (DeliveryType dt : DeliveryType.values()) {
+            if (dt.getText().equals(type)) {
+                return dt;
             }
         }
-        return Optional.empty();
+        throw new InvalidInputException(ErrorCode.INVALID_ORDER_TYPE);
     }
 }

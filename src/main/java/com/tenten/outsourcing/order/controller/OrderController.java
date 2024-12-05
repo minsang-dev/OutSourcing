@@ -7,6 +7,7 @@ import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.dto.OrderStatusRequestDto;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.user.dto.SessionDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
-            @RequestBody OrderRequestDto dto,
+            @RequestBody @Valid OrderRequestDto dto,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
@@ -36,7 +37,7 @@ public class OrderController {
 
     /**
      * 주문 현황 업데이트
-     * 해당 주문을 받은 점주만 업데이트 가능
+     * 해당 주문을 받은 점주만 순차적으로 업데이트 가능
      *
      * @param orderId 주문 식별자
      * @param session 현재 로그인한 유저 세션
@@ -48,7 +49,7 @@ public class OrderController {
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        orderService.updateOrderStatus(orderId, session.getId(), dto.getStatus());
+        orderService.updateOrderStatus(orderId, session.getId());
         return ResponseEntity.ok().body("상태가 변경되었습니다: " + dto.getStatus().getText());
     }
 
