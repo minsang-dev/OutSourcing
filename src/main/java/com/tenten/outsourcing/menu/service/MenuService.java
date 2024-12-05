@@ -24,7 +24,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
-    private final UserService userService ;
+    private final UserService userService;
 
     /**
      * 메뉴 생성
@@ -32,7 +32,7 @@ public class MenuService {
      */
     @Transactional
     public MenuResponseDto createMenu(Long userId, Long storeId, String menuName, String menuPictureUrl, Integer price) {
-
+  
         Store findStore = checkOwner(userId, storeId);
 
         Menu savedMenu = menuRepository.save(new Menu(menuName, menuPictureUrl, price, findStore));
@@ -73,6 +73,7 @@ public class MenuService {
 
        checkOwner(userId, storeId);
 
+
         Menu menu = findByIdOrElseThrow(menuId);
 
         menu.updateMenu(menuName, menuPictureUrl, price);
@@ -111,7 +112,6 @@ public class MenuService {
     /**
      * 로그인한 유저가 가게 사장인지 체크
      */
-    private Store checkOwner(Long ownerId, Long storeId) {
 
         User findUser = userService.findByIdOrElseThrow(ownerId);
         Store findStore = storeRepository.findById(storeId).orElseThrow(()

@@ -26,7 +26,7 @@ public class MenuController {
     public ResponseEntity<MenuResponseDto> createMenu(
             @PathVariable Long storeId,
             @RequestBody MenuRequestDto requestDto,
-            @SessionAttribute(name= LoginStatus.LOGIN_USER)SessionDto session
+            @SessionAttribute(name= LoginStatus.LOGIN_USER) SessionDto session
 
             ) {
 
@@ -63,7 +63,8 @@ public class MenuController {
             @PathVariable Long storeId,
             @PathVariable Long menuId,
             @RequestBody MenuUpdateRequestDto requestDto,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER)SessionDto session
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
+
     ) {
         MenuUpdateResponseDto responseDto = menuService.updateMenu(
                 session.getId(),
@@ -85,7 +86,8 @@ public class MenuController {
             @PathVariable Long storeId,
             @PathVariable Long menuId,
             @RequestBody MenuDeleteRequestDto requestDto,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER)SessionDto session
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
+
     ) {
         menuService.deleteMenu(session.getId(), storeId, menuId, requestDto.getPassword());
 

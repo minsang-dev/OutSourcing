@@ -4,12 +4,16 @@ import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
+import com.tenten.outsourcing.menu.entity.Menu;
+import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
 import com.tenten.outsourcing.store.dto.StoreResponseDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
 import com.tenten.outsourcing.store.dto.StoreUpdateResponseDto;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +31,13 @@ import static com.tenten.outsourcing.exception.ErrorCode.*;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
 
     @Transactional
-    public StoreResponseDto create(Long userId, StoreRequestDto requestDto) {
+    public StoreResponseDto create(SessionDto session, StoreRequestDto requestDto) {
 
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(NO_SESSION));
-        List<Store> stores = storeRepository.findByUserId(userId);
+        User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
+        List<Store> stores = storeRepository.findByUserId(session.getId());
 
         if (!Auth.OWNER.equals(findUser.getAuth())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
@@ -56,14 +61,23 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreUpdateResponseDto updateById(Long userId, Long storeId, StoreUpdateRequestDto requestDto) {
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(NO_SESSION));
+    public StoreDetailResponseDto findById(Long storeId) {
+        Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+
+        List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
+
+        return new StoreDetailResponseDto(findStore, allMenu);
+    }
+
+    @Transactional
+    public StoreUpdateResponseDto updateById(SessionDto session, Long storeId, StoreUpdateRequestDto requestDto) {
+        User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
 
         if (!Auth.OWNER.equals(findUser.getAuth())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
-        List<Store> ownStores = storeRepository.findByUserId(userId);
+        List<Store> ownStores = storeRepository.findByUserId(session.getId());
 
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
 
