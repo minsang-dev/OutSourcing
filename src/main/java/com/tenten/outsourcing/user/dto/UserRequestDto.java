@@ -1,7 +1,6 @@
 package com.tenten.outsourcing.user.dto;
 
-import com.tenten.outsourcing.common.Auth;
-import jakarta.persistence.Column;
+import com.tenten.outsourcing.common.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -28,6 +27,6 @@ public class UserRequestDto {
   @Size(max = 100, message = "주소는 최대 100자입니다.")
   private String address;
 
-  private Auth auth;
+  private Role role;
 
 }

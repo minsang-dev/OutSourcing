@@ -1,5 +1,5 @@
 package com.tenten.outsourcing.common;
 
-public enum Auth {
+public enum Role {
   USER, OWNER
 }

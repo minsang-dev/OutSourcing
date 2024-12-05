@@ -44,4 +44,14 @@ public class ReviewController {
         List<ReviewResponseDto> list = reviewService.getAll(session.getId(), orderId, lowRating, highRating, sortRating, pageable);
         return ResponseEntity.ok().body(list);
     }
+
+    // 사장 답글
+//    @PostMapping("/comments")
+//    public ResponseEntity<ReviewResponseDto> comment(
+//        @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+//        @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
+//    ){
+//        ReviewResponseDto reviewResponseDto = reviewRequestDto.saveComment(reviewRequestDto, session.getId());
+//        return ResponseEntity.ok().body(reviewResponseDto);
+//    }
 }

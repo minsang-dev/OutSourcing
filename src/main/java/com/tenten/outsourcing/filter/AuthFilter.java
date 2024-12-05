@@ -2,19 +2,16 @@ package com.tenten.outsourcing.filter;
 
 import static com.tenten.outsourcing.exception.ErrorCode.NO_AUTHOR_OWNER_PAGE;
 
-import com.tenten.outsourcing.common.Auth;
+import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.user.dto.SessionDto;
-import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.user.service.UserService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +39,7 @@ public class AuthFilter implements Filter {
       if(sessionDto == null) {
         return;
       }
-      if (isForOwner(requestURI) && !Auth.OWNER.equals(sessionDto.getAuth())) {
+      if (isForOwner(requestURI) && !Role.OWNER.equals(sessionDto.getRole())) {
         throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
 
       }

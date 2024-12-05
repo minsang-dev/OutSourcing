@@ -54,7 +54,7 @@ public class LoginController {
 
     HttpSession session = request.getSession();
 
-    session.setAttribute(LoginStatus.LOGIN_USER, new SessionDto(user.getId(), user.getAuth()));
+    session.setAttribute(LoginStatus.LOGIN_USER, new SessionDto(user.getId(), user.getRole()));
 
     return ResponseEntity.ok().body(new LoginResponseDto("로그인 성공"));
   }
