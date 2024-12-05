@@ -1,6 +1,5 @@
 package com.tenten.outsourcing.store.service;
 
-import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
@@ -40,10 +39,6 @@ public class StoreService {
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
         Long numberOfStores = storeRepository.findRegisteredStore(session.getId());
 
-        if (!Role.OWNER.equals(findUser.getRole())) {
-            throw new NoAuthorizedException(NO_AUTHOR_USER);
-        }
-
         if (!(numberOfStores < 3)) {
             throw new InvalidInputException(STORE_REGISTRATION_LIMITED);
         }
@@ -55,17 +50,16 @@ public class StoreService {
     }
 
     public List<StoreResponseDto> findByName(String name, Pageable pageable) {
-        List<StoreResponseDto> storeResponseDtoPage;
+
         int page = pageable.getPageNumber() - 1;
         Pageable correctPageable = PageRequest.of(Math.max(page, 0), pageable.getPageSize());
-        storeResponseDtoPage = storeRepository.findByNameContaining(name, correctPageable).stream().map(StoreResponseDto::new).toList();
 
-        return storeResponseDtoPage;
+        return storeRepository.findByNameContaining(name, correctPageable).stream().map(StoreResponseDto::new).toList();
     }
 
-    @Transactional
     public StoreDetailResponseDto findDetailById(Long storeId) {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
 
@@ -76,36 +70,40 @@ public class StoreService {
     public StoreUpdateResponseDto updateById(SessionDto session, Long storeId, StoreUpdateRequestDto requestDto) {
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
 
-        if (!Role.OWNER.equals(findUser.getRole())) {
-            throw new NoAuthorizedException(NO_AUTHOR_USER);
-        }
-
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         if (findUser.getId().equals(findStore.getUser().getId())) {
-
-
             findStore.updateStoreInformation(requestDto);
-
         } else {
-            throw new NoAuthorizedException(NO_STORE_OWNER);
+            throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
         }
 
         return new StoreUpdateResponseDto(findStore);
     }
 
     public Store findById(Long id) {
-        return storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        Store findStore = storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
+
+        return findStore;
     }
 
     @Transactional
     public void deleteById(SessionDto session, Long storeId) {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         if (!session.getId().equals(findStore.getUser().getId())) {
-            throw new NoAuthorizedException(NO_STORE_OWNER);
+            throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
         }
 
         findStore.softDelete();
+    }
+
+    public void validateDeleted(Store store) {
+        if (!(store.getDeletedAt() == null)) {
+            throw new InvalidInputException(DELETED_STORE);
+        }
     }
 }

@@ -3,12 +3,13 @@ package com.tenten.outsourcing.store.dto;
 import com.tenten.outsourcing.store.entity.Store;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
 public class StoreUpdateResponseDto {
     private String name;
+
+    private String address;
 
     private LocalTime openTime;
 
@@ -22,6 +23,7 @@ public class StoreUpdateResponseDto {
 
     public StoreUpdateResponseDto(Store store) {
         this.name = store.getName();
+        this.address = store.getAddress();
         this.openTime = store.getOpenTime();
         this.closeTime = store.getCloseTime();
         this.minAmount = store.getMinAmount();
