@@ -12,32 +12,31 @@ public class GlobalExceptionController {
 
   //커스텀
   @ExceptionHandler
-  public ResponseEntity<String> duplicatedException(DuplicatedException e){
-    return new ResponseEntity<>(e.getErrorCode().getMessage(), e.getErrorCode().getHttpStatus());
+  public ResponseEntity<ExceptionResponseDto> duplicatedException(DuplicatedException e){
+    return new ResponseEntity<>(new ExceptionResponseDto(e.getErrorCode()), e.getErrorCode().getHttpStatus());
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> internalServerException(InternalServerException e){
-    return new ResponseEntity<>(e.getErrorCode().getMessage(), e.getErrorCode().getHttpStatus());
+  public ResponseEntity<ExceptionResponseDto> internalServerException(InternalServerException e){
+    return new ResponseEntity<>(new ExceptionResponseDto(e.getErrorCode()), e.getErrorCode().getHttpStatus());
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> invalidInputException(InvalidInputException e){
-    return new ResponseEntity<>(e.getErrorCode().getMessage(), e.getErrorCode().getHttpStatus());
+  public ResponseEntity<ExceptionResponseDto> invalidInputException(InvalidInputException e){
+    return new ResponseEntity<>(new ExceptionResponseDto(e.getErrorCode()), e.getErrorCode().getHttpStatus());
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> notFoundException(NotFoundException e){
-    return new ResponseEntity<>(e.getErrorCode().getMessage(), e.getErrorCode().getHttpStatus());
+  public ResponseEntity<ExceptionResponseDto> notFoundException(NotFoundException e){
+    return new ResponseEntity<>(new ExceptionResponseDto(e.getErrorCode()), e.getErrorCode().getHttpStatus());
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> noAuthorizedException(NoAuthorizedException e){
-    return new ResponseEntity<>(e.getErrorCode().getMessage(), e.getErrorCode().getHttpStatus());
+  public ResponseEntity<ExceptionResponseDto> noAuthorizedException(NoAuthorizedException e){
+    return new ResponseEntity<>(new ExceptionResponseDto(e.getErrorCode()), e.getErrorCode().getHttpStatus());
   }
 
   //자바
-
   @ExceptionHandler
   public ResponseEntity<String> constrainViolationException(ConstraintViolationException e) {
     return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -49,9 +48,12 @@ public class GlobalExceptionController {
     return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<String> constraintViolationException(Exception e) {
-    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-  }
+//  @ExceptionHandler
+//  public
+
+//  @ExceptionHandler(Exception.class)
+//  public ResponseEntity<String> constraintViolationException(Exception e) {
+//    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//  }
 
 }

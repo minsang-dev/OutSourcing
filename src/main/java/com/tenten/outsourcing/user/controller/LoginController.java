@@ -6,6 +6,7 @@ import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.user.dto.DeleteRequestDto;
 import com.tenten.outsourcing.user.dto.LoginRequestDto;
+import com.tenten.outsourcing.user.dto.LoginResponseDto;
 import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.dto.UserRequestDto;
 import com.tenten.outsourcing.user.dto.UserResponseDto;
@@ -39,7 +40,7 @@ public class LoginController {
 
   @PostMapping("/login")
 //  public ResponseEntity<UserResponseDto> login(
-  public ResponseEntity<String> login(
+  public ResponseEntity<LoginResponseDto> login(
       @Valid @RequestBody LoginRequestDto loginRequestDto,
       HttpServletRequest request
   ){
@@ -55,18 +56,18 @@ public class LoginController {
 
     session.setAttribute(LoginStatus.LOGIN_USER, new SessionDto(user.getId(), user.getAuth()));
 
-    return ResponseEntity.ok().body("로그인 성공");
+    return ResponseEntity.ok().body(new LoginResponseDto("로그인 성공"));
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<String> logout(
+  public ResponseEntity<LoginResponseDto> logout(
       HttpServletRequest request
   ){
     HttpSession session = request.getSession(false);
     if(session != null){
       session.invalidate();
     }
-    return ResponseEntity.ok().body("로그아웃 되었습니다.");
+    return ResponseEntity.ok().body( new LoginResponseDto( "로그아웃 되었습니다."));
   }
 
   @DeleteMapping("/users")
@@ -79,5 +80,12 @@ public class LoginController {
     userService.deleteUser(sessionDto.getId(), deleteRequestDto.getPassword());
     session.invalidate();
     return ResponseEntity.ok().body("삭제 되었습니다.");
+  }
+
+  @GetMapping("/test/owner")
+  public ResponseEntity<String> testOwner(
+
+  ){
+    return null;
   }
 }

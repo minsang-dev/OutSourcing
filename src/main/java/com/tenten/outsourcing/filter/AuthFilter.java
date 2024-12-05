@@ -1,7 +1,10 @@
 package com.tenten.outsourcing.filter;
 
+import static com.tenten.outsourcing.exception.ErrorCode.NO_AUTHOR_OWNER_PAGE;
+
 import com.tenten.outsourcing.common.Auth;
 import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
@@ -40,11 +43,8 @@ public class AuthFilter implements Filter {
         return;
       }
       if (isForOwner(requestURI) && !Auth.OWNER.equals(sessionDto.getAuth())) {
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        servletResponse.setCharacterEncoding("UTF-8");
-        servletResponse.getWriter().write("오너만 접근 가능한 페이지입니다.");
-        return;
+        throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
+
       }
     }
 
