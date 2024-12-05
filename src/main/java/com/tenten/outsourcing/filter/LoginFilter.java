@@ -2,6 +2,8 @@ package com.tenten.outsourcing.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.exception.ErrorCode;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.PatternMatchUtils;
 
 @Slf4j
@@ -35,13 +38,7 @@ public class LoginFilter implements Filter {
 
       HttpSession session = httpRequest.getSession(false);
       if(session == null || session.getAttribute(LoginStatus.LOGIN_USER) == null){
-
-        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        servletResponse.setCharacterEncoding("UTF-8");
-        servletResponse.getWriter().write("로그인을 해주세요");
-//        throw new NotLoginException(HttpStatus.UNAUTHORIZED, "로그인을 해주세요");
-        return;
+        throw new NoAuthorizedException(ErrorCode.NO_SESSION);
       }
     }
 
