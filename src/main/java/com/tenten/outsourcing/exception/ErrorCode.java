@@ -49,10 +49,7 @@ public enum ErrorCode {
   //권한이 없는 사용자가 수정, 삭제를 하려고 할 때
   NO_AUTHOR_CHANGE("수정, 삭제는 작성자만 할 수 있습니다.", HttpStatus.UNAUTHORIZED),
   NO_DELIVERY_ALREADY("배달이 완료된 주문만 리뷰 작성 가능합니다.", HttpStatus.UNAUTHORIZED),
-  NO_STORE_OWNER("해당 가게 사장님만 접근 가능합니다.", HttpStatus.UNAUTHORIZED),
-  NO_AUTHOR_USER("일반 사용자는 가게를 등록할 수 없습니다.", HttpStatus.UNAUTHORIZED),
-  NO_AUTHOR_OWNER_PAGE("오너만 접근 가능한 페이지입니다.", HttpStatus.UNAUTHORIZED),
-  NOT_STORE_OWNER("해당 가게 사장님만 접근 가능합니다.", HttpStatus.UNAUTHORIZED);
+  NO_AUTHOR_OWNER_PAGE("오너만 접근 가능한 페이지입니다.", HttpStatus.UNAUTHORIZED);
 
   private final String message;
   private final HttpStatus httpStatus;
