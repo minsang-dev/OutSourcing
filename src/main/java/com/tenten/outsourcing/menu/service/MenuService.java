@@ -30,10 +30,10 @@ public class MenuService {
     // 메뉴 생성
     @Transactional
     public MenuResponseDto createMenu(
-            HttpServletRequest request, Long storeId, String menuName, String menuPictureUrl, Integer price) {
+            Long userId, Long storeId, String menuName, String menuPictureUrl, Integer price) {
 
         // 유저를 찾고, 가게를 찾고 -> 가게의 유저(사장)와 로그인한 유저를 비교 -> 맞으면 찾은 Store로 Menu 생성
-        Store findStore = checkOwner(request, storeId);
+        Store findStore = checkOwner(userId, storeId);
 
         Menu savedMenu = menuRepository.save(new Menu(menuName, menuPictureUrl, price, findStore));
 
@@ -56,9 +56,9 @@ public class MenuService {
     // 메뉴 수정 로직
     @Transactional
     public MenuUpdateResponseDto updateMenu(
-            HttpServletRequest request, Long storeId, Long menuId, String menuName, String menuPictureUrl, Integer price) {
+            Long ownerId, Long storeId, Long menuId, String menuName, String menuPictureUrl, Integer price) {
 
-       checkOwner(request, storeId);
+       checkOwner(ownerId, storeId);
 
         Menu menu = findByIdOrElseThrow(menuId);
 
@@ -77,13 +77,12 @@ public class MenuService {
     }
 
     // 메뉴 삭제
-    public void deleteMenu(HttpServletRequest request, Long storeId, Long menuId, String password) {
+    public void deleteMenu(Long ownerId, Long storeId, Long menuId, String password) {
 
-        checkOwner(request, storeId);
+        checkOwner(ownerId, storeId);
 
         // 1. 로그인한 User 찾기
-        Long userId = userService.getSession(request).getId();
-        User findUser = userService.findByIdOrElseThrow(userId);
+        User findUser = userService.findByIdOrElseThrow(ownerId);
 
         // 2. findUser의 패스워드와 비교
         userService.checkPasswordMatch(findUser.getPassword(), password);
@@ -102,9 +101,7 @@ public class MenuService {
      * => (로그인한 유저 == owner)? store : exception
      */
 
-    private Store checkOwner(HttpServletRequest request, Long storeId) {
-
-        Long ownerId = userService.getSession(request).getId();
+    private Store checkOwner(Long ownerId, Long storeId) {
 
         User findUser = userService.findByIdOrElseThrow(ownerId);
         Store findStore = storeRepository.findById(storeId).orElseThrow(()

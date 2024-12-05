@@ -1,8 +1,10 @@
 package com.tenten.outsourcing.menu.controller;
 
+import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.menu.dto.*;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,14 +23,13 @@ public class MenuController {
     // 메뉴 생성
     @PostMapping
     public ResponseEntity<MenuResponseDto> createMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
-            @RequestBody MenuRequestDto requestDto
-
+            @RequestBody MenuRequestDto requestDto,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
         MenuResponseDto responseDto = menuService.createMenu(
-                request,
+                session.getId(),
                 storeId,
                 requestDto.getMenuName(),
                 requestDto.getMenuPictureUrl(),
@@ -51,13 +52,13 @@ public class MenuController {
     // 메뉴 수정
     @PutMapping("/{menuId}")
     public ResponseEntity<MenuUpdateResponseDto> updateMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuUpdateRequestDto requestDto
+            @RequestBody MenuUpdateRequestDto requestDto,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
         MenuUpdateResponseDto responseDto = menuService.updateMenu(
-                request,
+                session.getId(),
                 storeId,
                 menuId,
                 requestDto.getMenuName(),
@@ -71,12 +72,12 @@ public class MenuController {
     // 메뉴 삭제
     @DeleteMapping("/{menuId}")
     public ResponseEntity<MenuResponseDto> deleteMenu(
-            HttpServletRequest request,
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuDeleteRequestDto requestDto
+            @RequestBody MenuDeleteRequestDto requestDto,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
-        menuService.deleteMenu(request, storeId, menuId, requestDto.getPassword());
+        menuService.deleteMenu(session.getId(), storeId, menuId, requestDto.getPassword());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
