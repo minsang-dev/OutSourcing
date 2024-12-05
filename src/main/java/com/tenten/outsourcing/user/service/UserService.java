@@ -1,12 +1,14 @@
 package com.tenten.outsourcing.user.service;
 
 import static com.tenten.outsourcing.exception.ErrorCode.DELETED_USER;
+import static com.tenten.outsourcing.exception.ErrorCode.EMAIL_EXIST;
 import static com.tenten.outsourcing.exception.ErrorCode.NOT_FOUND_EMAIL;
 import static com.tenten.outsourcing.exception.ErrorCode.SESSION_TIMEOUT;
 import static com.tenten.outsourcing.exception.ErrorCode.WRONG_PASSWORD;
 
 import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.config.PasswordEncoder;
+import com.tenten.outsourcing.exception.DuplicatedException;
 import com.tenten.outsourcing.exception.InternalServerException;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NotFoundException;
@@ -32,6 +34,7 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
 
   public UserResponseDto signUp(UserRequestDto userRequestDto) {
+    checkEmailDulicated(userRequestDto.getEmail());
     User user = userRepository.save(new User(userRequestDto));
      return UserResponseDto.toDto(user);
   }
@@ -81,4 +84,11 @@ public class UserService {
     SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
     return sessionDto;
   }
+
+  private void checkEmailDulicated(String email){
+    if(userRepository.existsByEmail(email)){
+      throw new DuplicatedException(EMAIL_EXIST);
+    }
+  }
+
 }
