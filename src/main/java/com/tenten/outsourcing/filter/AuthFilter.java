@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.PatternMatchUtils;
 
@@ -37,8 +36,10 @@ public class AuthFilter implements Filter {
 
     if(session !=null) {
       SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
-
-      if (!isForOwner(requestURI) && !Auth.OWNER.equals(sessionDto.getAuth())) {
+      if(sessionDto == null) {
+        return;
+      }
+      if (isForOwner(requestURI) && !Auth.OWNER.equals(sessionDto.getAuth())) {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         servletResponse.setCharacterEncoding("UTF-8");
@@ -51,16 +52,6 @@ public class AuthFilter implements Filter {
   }
 
   private boolean isForOwner(String requestUrl){
-    if(PatternMatchUtils.simpleMatch(FOR_OWNER, requestUrl)){ // 오너 주소에 있고,
-      // 오너 이다.
-      return false;
-
-      // 접근 가능
-    }
-    return true;
-  }
-
-  private boolean isNotOwner(String request){
-    return false;
+    return PatternMatchUtils.simpleMatch(FOR_OWNER, requestUrl);
   }
 }
