@@ -45,7 +45,8 @@ public class StoreController {
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateById(
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
-            @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
+            @PathVariable Long storeId,
+            @Valid @RequestBody StoreUpdateRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
     }
