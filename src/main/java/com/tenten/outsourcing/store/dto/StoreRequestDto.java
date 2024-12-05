@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 public class StoreRequestDto {
@@ -16,10 +17,10 @@ public class StoreRequestDto {
     private String address;
 
     @NotNull
-    private LocalDateTime openTime;
+    private LocalTime openTime;
 
     @NotNull
-    private LocalDateTime closeTime;
+    private LocalTime closeTime;
 
     @NotNull
     private Integer minAmount;

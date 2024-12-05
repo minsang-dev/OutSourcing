@@ -12,11 +12,13 @@ import java.util.List;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    @Query(value = "Select count(s.user.id) "
-            + "from Store s "
-            + "where s.user.id = :id "
-            + "and s.deletedAt is null")
-    List<Store> findByUserId(@Param("id") Long id);
+    @Query(value = "SELECT count(s.user.id) "
+            + "FROM Store s "
+            + "WHERE s.user.id = :id "
+            + "AND s.deletedAt IS NULL")
+    Long findRegisteredStore(@Param("id") Long id);
 
-    List<Store> findByNameLike(String name, Pageable pageable);
+
+    @Query(value = "SELECT s FROM Store s WHERE s.name like %:name% AND s.deletedAt IS NULL")
+    List<Store> findByNameContaining(@Param("name") String name, Pageable pageable);
 }

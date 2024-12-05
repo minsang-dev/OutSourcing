@@ -38,13 +38,13 @@ public class StoreService {
     public StoreResponseDto create(SessionDto session, StoreRequestDto requestDto) {
 
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
-        List<Store> stores = storeRepository.findByUserId(session.getId());
+        Long numberOfStores = storeRepository.findRegisteredStore(session.getId());
 
         if (!Role.OWNER.equals(findUser.getRole())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
-        if (!(stores.size() < 3)) {
+        if (!(numberOfStores < 3)) {
             throw new InvalidInputException(STORE_REGISTRATION_LIMITED);
         }
 
@@ -58,7 +58,7 @@ public class StoreService {
         List<StoreResponseDto> storeResponseDtoPage;
         int page = pageable.getPageNumber() - 1;
         Pageable correctPageable = PageRequest.of(Math.max(page, 0), pageable.getPageSize());
-        storeResponseDtoPage = storeRepository.findByNameLike(name, correctPageable).stream().map(StoreResponseDto::new).toList();
+        storeResponseDtoPage = storeRepository.findByNameContaining(name, correctPageable).stream().map(StoreResponseDto::new).toList();
 
         return storeResponseDtoPage;
     }
@@ -80,20 +80,18 @@ public class StoreService {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
-        List<Store> ownStores = storeRepository.findByUserId(session.getId());
-
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
 
-        List<Store> matchedStore = ownStores.stream().filter(store -> store.getId().equals(findStore.getId())).toList();
+        if (findUser.getId().equals(findStore.getUser().getId())) {
 
-        if (!matchedStore.isEmpty()) {
-            matchedStore.get(0).updateStoreInformation(requestDto);
+
+            findStore.updateStoreInformation(requestDto);
 
         } else {
             throw new NoAuthorizedException(NO_STORE_OWNER);
         }
 
-        return new StoreUpdateResponseDto(matchedStore.get(0));
+        return new StoreUpdateResponseDto(findStore);
     }
 
     public Store findById(Long id) {

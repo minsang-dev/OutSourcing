@@ -50,8 +50,8 @@ public class OrderService {
         Store store = findMenu.getStore();
 
         // 가게 운영 시간이 아닐시
-        if (LocalTime.now().isAfter(store.getCloseTime().toLocalTime())
-                || LocalTime.now().isBefore(store.getOpenTime().toLocalTime())
+        if (LocalTime.now().isAfter(store.getCloseTime())
+                || LocalTime.now().isBefore(store.getOpenTime())
         ) {
             throw new InvalidInputException(STORE_CLOSED);
         }
