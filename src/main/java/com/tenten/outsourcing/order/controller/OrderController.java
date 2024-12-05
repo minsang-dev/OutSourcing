@@ -6,6 +6,7 @@ import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.dto.OrderStatusRequestDto;
 import com.tenten.outsourcing.order.service.OrderService;
+import com.tenten.outsourcing.user.dto.SessionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
             @RequestBody OrderRequestDto dto,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER) Long loginId
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        OrderResponseDto orderDto = orderService.createOrder(dto, loginId);
+        OrderResponseDto orderDto = orderService.createOrder(dto, session.getId());
         return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
     }
 
@@ -38,16 +39,16 @@ public class OrderController {
      * 해당 주문을 받은 점주만 업데이트 가능
      *
      * @param orderId 주문 식별자
-     * @param loginId 현재 로그인한 유저 식별자
+     * @param session 현재 로그인한 유저 세션
      */
     @PatchMapping("/status/{orderId}")
     public ResponseEntity<String> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody OrderStatusRequestDto dto,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER) Long loginId
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        orderService.updateOrderStatus(orderId, loginId, dto.getStatus());
+        orderService.updateOrderStatus(orderId, session.getId(), dto.getStatus());
         return ResponseEntity.ok().body("상태가 변경되었습니다: " + dto.getStatus().getText());
     }
 
@@ -57,10 +58,10 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> findOrder(
             @PathVariable Long orderId,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER) Long loginId
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        OrderResponseDto orderDto = orderService.findOrder(orderId, loginId);
+        OrderResponseDto orderDto = orderService.findOrder(orderId, session.getId());
         return ResponseEntity.ok().body(orderDto);
     }
 
@@ -72,12 +73,12 @@ public class OrderController {
      */
     @GetMapping
     public ResponseEntity<PagingResponseDto> findAllOrders(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER) Long loginId
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        List<OrderResponseDto> allOrdersDto = orderService.findAllOrders(loginId, page, size);
+        List<OrderResponseDto> allOrdersDto = orderService.findAllOrders(session.getId(), page, size);
         return ResponseEntity.ok().body(new PagingResponseDto(page, size, allOrdersDto));
     }
 }

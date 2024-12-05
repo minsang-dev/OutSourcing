@@ -2,6 +2,7 @@ package com.tenten.outsourcing.store.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tenten.outsourcing.common.BaseEntity;
+import com.tenten.outsourcing.store.dto.StoreRequestDto;
 import com.tenten.outsourcing.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +20,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Store extends BaseEntity {
 
   @Id
@@ -50,4 +50,14 @@ public class Store extends BaseEntity {
 
   private LocalDateTime deletedAt;
 
+  public Store(StoreRequestDto requestDto, User user) {
+      this.user = user;
+      this.storeImageUrl = requestDto.getStoreImageUrl();
+      this.name = requestDto.getName();
+      this.address = requestDto.getAddress();
+      this.phoneNumber = requestDto.getPhoneNumber();
+      this.minAmount = requestDto.getMinAmount();
+      this.openTime = requestDto.getOpenTime();
+      this.closeTime = requestDto.getCloseTime();
+  }
 }
