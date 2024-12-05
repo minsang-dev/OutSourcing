@@ -112,8 +112,9 @@ public class MenuService {
     /**
      * 로그인한 유저가 가게 사장인지 체크
      */
+    private Store checkOwner(Long userId, Long storeId) {
 
-        User findUser = userService.findByIdOrElseThrow(ownerId);
+        User findUser = userService.findByIdOrElseThrow(userId);
         Store findStore = storeRepository.findById(storeId).orElseThrow(()
                 -> new NotFoundException(ErrorCode.NOT_FOUND_STORE));
 
