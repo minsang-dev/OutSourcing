@@ -57,9 +57,9 @@ public class StoreService {
         return storeRepository.findByNameContaining(name, correctPageable).stream().map(StoreResponseDto::new).toList();
     }
 
-    @Transactional
     public StoreDetailResponseDto findDetailById(Long storeId) {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
 
@@ -71,6 +71,7 @@ public class StoreService {
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
 
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         if (findUser.getId().equals(findStore.getUser().getId())) {
             findStore.updateStoreInformation(requestDto);
@@ -82,17 +83,27 @@ public class StoreService {
     }
 
     public Store findById(Long id) {
-        return storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        Store findStore = storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
+
+        return findStore;
     }
 
     @Transactional
     public void deleteById(SessionDto session, Long storeId) {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+        validateDeleted(findStore);
 
         if (!session.getId().equals(findStore.getUser().getId())) {
             throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
         }
 
         findStore.softDelete();
+    }
+
+    public void validateDeleted(Store store) {
+        if (!(store.getDeletedAt() == null)) {
+            throw new InvalidInputException(DELETED_STORE);
+        }
     }
 }
