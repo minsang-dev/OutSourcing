@@ -1,6 +1,6 @@
 package com.tenten.outsourcing.store.service;
 
-import com.tenten.outsourcing.common.Auth;
+import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
@@ -40,7 +40,7 @@ public class StoreService {
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
         List<Store> stores = storeRepository.findByUserId(session.getId());
 
-        if (!Auth.OWNER.equals(findUser.getAuth())) {
+        if (!Role.OWNER.equals(findUser.getRole())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
@@ -76,7 +76,7 @@ public class StoreService {
     public StoreUpdateResponseDto updateById(SessionDto session, Long storeId, StoreUpdateRequestDto requestDto) {
         User findUser = userRepository.findById(session.getId()).orElseThrow(() -> new NotFoundException(NO_SESSION));
 
-        if (!Auth.OWNER.equals(findUser.getAuth())) {
+        if (!Role.OWNER.equals(findUser.getRole())) {
             throw new NoAuthorizedException(NO_AUTHOR_USER);
         }
 
