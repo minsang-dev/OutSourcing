@@ -10,7 +10,6 @@ import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
-    private final UserService userService ;
+    private final UserService userService;
 
     // 메뉴 생성
     @Transactional
@@ -58,7 +57,7 @@ public class MenuService {
     public MenuUpdateResponseDto updateMenu(
             Long ownerId, Long storeId, Long menuId, String menuName, String menuPictureUrl, Integer price) {
 
-       checkOwner(ownerId, storeId);
+        checkOwner(ownerId, storeId);
 
         Menu menu = findByIdOrElseThrow(menuId);
 

@@ -5,7 +5,6 @@ import com.tenten.outsourcing.menu.dto.*;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
 import com.tenten.outsourcing.user.dto.SessionDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
