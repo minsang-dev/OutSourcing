@@ -17,6 +17,7 @@ import com.tenten.outsourcing.user.dto.SessionDto;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,9 @@ public class StoreService {
 
     public List<StoreResponseDto> findByName(String name, Pageable pageable) {
         List<StoreResponseDto> storeResponseDtoPage;
-        storeResponseDtoPage = storeRepository.findByNameLike(name, pageable).stream().map(StoreResponseDto::new).toList();
+        int page = pageable.getPageNumber() - 1;
+        Pageable correctPageable = PageRequest.of(Math.max(page, 0), pageable.getPageSize());
+        storeResponseDtoPage = storeRepository.findByNameLike(name, correctPageable).stream().map(StoreResponseDto::new).toList();
 
         return storeResponseDtoPage;
     }
