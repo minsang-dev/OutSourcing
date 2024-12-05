@@ -1,6 +1,9 @@
 package com.tenten.outsourcing.review.service;
 
-import com.tenten.outsourcing.order.dto.OrderResponseDto;
+import static com.tenten.outsourcing.exception.ErrorCode.NO_DELIVERY_ALREADY;
+
+import com.tenten.outsourcing.common.DeliveryStatus;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.order.entity.Order;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.review.dto.ReviewRequestDto;
@@ -11,14 +14,20 @@ import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.service.StoreService;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.service.UserService;
+import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
+  private final EntityManager entityManager;
   private final ReviewRepository reviewRepository;
   private final UserService userService;
   private final StoreService storeService;
@@ -27,10 +36,11 @@ public class ReviewService {
   public ReviewResponseDto save(@Valid ReviewRequestDto reviewRequestDto, Long userId) {
 
     User user = userService.findByIdOrElseThrow(userId);
-//    OrderResponseDto orderResponseDto = orderService.findOrder(reviewRequestDto.getOrderId(), userId);
-    Order order = null;
-//    Store store = storeService
-    Store store = null;
+    Order order = orderService.findOrderByIdOrElseThrow(reviewRequestDto.getOrderId());
+    Store store = new Store();
+    if(DeliveryStatus.DELIVERED.equals(order.getStatus())){
+      throw new NoAuthorizedException(NO_DELIVERY_ALREADY);
+    }
     Review review = new Review(user, store, order, reviewRequestDto.getRating(), reviewRequestDto.getContent());
     reviewRepository.save(review);
     return new ReviewResponseDto(
@@ -39,4 +49,43 @@ public class ReviewService {
     );
   }
 
+  public List<ReviewResponseDto> getAll(Long userId, Long orderId, Integer lowRating, Integer highRating, Boolean sortRating, Pageable pageable) {
+
+    Order order = orderService.findOrderByIdOrElseThrow(userId);
+
+    String query = "select r "
+        + "from Review r "
+        + "where r.user.id != " + userId + " ";
+
+    if(lowRating != null && highRating != null) {
+      query += " and r.rating between " + lowRating + " and " + highRating + " ";
+    }else if(lowRating != null) {
+      query += " and r.rating >= " + lowRating + " ";
+    }else if(highRating != null) {
+      query += " and r.rating <= " + highRating + " ";
+    }
+    query += "group by r.store.id";
+    if(Boolean.TRUE.equals(sortRating)) {
+      query += " order by r.rating desc, r.createdAt desc ";
+    }else{
+      query += " order by r.createdAt desc ";
+    }
+
+    List<Review> reviewList = entityManager.createQuery(query, Review.class)
+        .setFirstResult(pageable.getPageNumber())
+        .setMaxResults(pageable.getPageSize())
+        .getResultList();
+
+    return reviewList.stream()
+        .map(ReviewResponseDto::toDto)
+        .toList();
+  }
+
+  private Pageable checkSortByRating(boolean sortRating, Pageable pageable ) {
+    if (sortRating) {
+      pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+          Sort.by("rating").descending().and(Sort.by("createdAt").descending()));
+    }
+    return pageable;
+  }
 }
