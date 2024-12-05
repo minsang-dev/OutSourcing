@@ -61,7 +61,7 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDetailResponseDto findById(Long storeId) {
+    public StoreDetailResponseDto findDetailById(Long storeId) {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
 
         List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
@@ -91,5 +91,9 @@ public class StoreService {
         }
 
         return new StoreUpdateResponseDto(matchedStore.get(0));
+    }
+
+    public Store findById(Long id) {
+        return storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
     }
 }

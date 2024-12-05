@@ -38,8 +38,8 @@ public class StoreController {
     }
 
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<StoreDetailResponseDto> findById(@PathVariable Long storeId) {
-        return new ResponseEntity<>(storeService.findById(storeId), HttpStatus.OK);
+    public ResponseEntity<StoreDetailResponseDto> findDetailById(@PathVariable Long storeId) {
+        return new ResponseEntity<>(storeService.findDetailById(storeId), HttpStatus.OK);
     }
 
     @PatchMapping("/stores/{storeId}")
