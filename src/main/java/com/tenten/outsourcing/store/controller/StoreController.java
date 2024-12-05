@@ -1,5 +1,6 @@
 package com.tenten.outsourcing.store.controller;
 
+import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
 import com.tenten.outsourcing.store.dto.StoreResponseDto;
@@ -35,7 +36,7 @@ public class StoreController {
 
     @PostMapping("/stores")
     public ResponseEntity<StoreResponseDto> create(
-            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @Valid @RequestBody StoreRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.create(session, requestDto), HttpStatus.CREATED);
@@ -56,7 +57,7 @@ public class StoreController {
 
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateById(
-            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
