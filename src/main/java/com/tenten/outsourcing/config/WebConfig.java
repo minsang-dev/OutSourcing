@@ -1,9 +1,8 @@
 package com.tenten.outsourcing.config;
 
 import com.tenten.outsourcing.filter.AuthFilter;
+import com.tenten.outsourcing.filter.CustomExceptionHandlerFilter;
 import com.tenten.outsourcing.filter.LoginFilter;
-import com.tenten.outsourcing.user.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +27,15 @@ public class WebConfig implements WebMvcConfigurer {
     filterRegistrationBean.setFilter(new AuthFilter());
     filterRegistrationBean.addUrlPatterns("/*");
     filterRegistrationBean.setOrder(3);
+    return filterRegistrationBean;
+  }
+
+  @Bean
+  public FilterRegistrationBean exceptionHandlerFilter() {
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.setFilter(new CustomExceptionHandlerFilter());
+    filterRegistrationBean.addUrlPatterns("/*");
+    filterRegistrationBean.setOrder(1);
     return filterRegistrationBean;
   }
 }
