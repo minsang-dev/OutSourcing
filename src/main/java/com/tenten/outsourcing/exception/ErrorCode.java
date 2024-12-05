@@ -20,6 +20,7 @@ public enum ErrorCode {
 
   // NotFoundException
   NOT_FOUND_EMAIL("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  NOT_FOUND_MENU("메뉴를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
   // InternalServerException
   //세션이 만료되었을 때 출력하는 오류 메시지
