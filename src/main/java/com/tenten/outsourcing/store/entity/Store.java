@@ -69,4 +69,8 @@ public class Store extends BaseEntity {
       this.minAmount = requestDto.getMinAmount();
       this.storeImageUrl = requestDto.getStoreImageUrl();
     }
+
+    public void softDelete() {
+      this.deletedAt = LocalDateTime.now();
+    }
 }

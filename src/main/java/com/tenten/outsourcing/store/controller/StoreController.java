@@ -50,4 +50,10 @@ public class StoreController {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
     }
 
+    @DeleteMapping("/stores/{storeId}")
+    public ResponseEntity<Void> deleteById(@SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session, @PathVariable Long storeId) {
+        storeService.deleteById(session, storeId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

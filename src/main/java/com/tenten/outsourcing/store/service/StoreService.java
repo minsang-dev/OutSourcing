@@ -87,7 +87,7 @@ public class StoreService {
             matchedStore.get(0).updateStoreInformation(requestDto);
 
         } else {
-            throw new NoAuthorizedException(NOT_FOUND_STORE);
+            throw new NoAuthorizedException(NO_STORE_OWNER);
         }
 
         return new StoreUpdateResponseDto(matchedStore.get(0));
@@ -95,5 +95,16 @@ public class StoreService {
 
     public Store findById(Long id) {
         return storeRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+    }
+
+    @Transactional
+    public void deleteById(SessionDto session, Long storeId) {
+        Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
+
+        if (!session.getId().equals(findStore.getUser().getId())) {
+            throw new NoAuthorizedException(NO_STORE_OWNER);
+        }
+
+        findStore.softDelete();
     }
 }
