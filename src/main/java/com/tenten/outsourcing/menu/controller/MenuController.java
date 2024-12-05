@@ -1,12 +1,15 @@
 package com.tenten.outsourcing.menu.controller;
 
 import com.tenten.outsourcing.menu.dto.*;
+import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +36,15 @@ public class MenuController {
         );
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
+    }
+
+    // 메뉴 다건 조회
+    @GetMapping
+    public ResponseEntity<List<Menu>> getMenuByStoreId(@PathVariable Long storeId) {
+        List<Menu> menus = menuService.getMenusByStoreId(storeId);
+
+        return new ResponseEntity<>(menus, HttpStatus.OK);
 
     }
 
