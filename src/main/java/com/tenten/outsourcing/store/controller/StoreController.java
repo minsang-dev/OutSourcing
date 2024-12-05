@@ -1,28 +1,16 @@
 package com.tenten.outsourcing.store.controller;
 
-import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
-import com.tenten.outsourcing.store.dto.StoreRequestDto;
-import com.tenten.outsourcing.store.dto.StoreResponseDto;
-import com.tenten.outsourcing.store.dto.StoreUpdateRequestDto;
-import com.tenten.outsourcing.store.dto.StoreUpdateResponseDto;
+import com.tenten.outsourcing.common.LoginStatus;
+import com.tenten.outsourcing.store.dto.*;
 import com.tenten.outsourcing.store.service.StoreService;
 import com.tenten.outsourcing.user.dto.SessionDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +23,7 @@ public class StoreController {
 
     @PostMapping("/stores")
     public ResponseEntity<StoreResponseDto> create(
-            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @Valid @RequestBody StoreRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.create(session, requestDto), HttpStatus.CREATED);
@@ -56,7 +44,7 @@ public class StoreController {
 
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateById(
-            @SessionAttribute(name = "LOGIN_USER", required = false) SessionDto session,
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @PathVariable Long storeId, @RequestBody StoreUpdateRequestDto requestDto
     ) {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
