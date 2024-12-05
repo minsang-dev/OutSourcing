@@ -7,6 +7,7 @@ import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.dto.OrderStatusRequestDto;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.user.dto.SessionDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
-            @RequestBody OrderRequestDto dto,
+            @RequestBody @Valid OrderRequestDto dto,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 

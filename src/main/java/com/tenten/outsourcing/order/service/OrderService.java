@@ -62,7 +62,7 @@ public class OrderService {
         }
 
         Integer totalPrice = findMenu.getPrice();
-        DeliveryType type = DeliveryType.findTypeByText(dto.getType()).orElseThrow();
+        DeliveryType type = dto.getType();
 
         Order order = new Order(store, findUser, findMenu, totalPrice, dto.getRequest(), type, DeliveryStatus.ACCEPTED);
         Order savedOrder = orderRepository.save(order);
