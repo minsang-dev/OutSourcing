@@ -5,14 +5,8 @@ import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.common.BaseEntity;
 import com.tenten.outsourcing.config.PasswordEncoder;
 import com.tenten.outsourcing.user.dto.UserRequestDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +17,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "`user`")
 public class User extends BaseEntity {
 
   @Id
@@ -55,5 +50,13 @@ public class User extends BaseEntity {
     this.name = userRequestDto.getName();
     this.address = userRequestDto.getAddress();
     this.role = userRequestDto.getRole();
+  }
+
+  public User(String email, String password, String name, String address, Role role) {
+    this.email = email;
+    this.password = password;
+    this.name = name;
+    this.address = address;
+    this.role = role;
   }
 }
