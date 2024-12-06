@@ -96,12 +96,12 @@ public class BucketService {
      */
     public String deleteBucket(Long userId, String cookieValue, Long menuId) {
         try {
-            List<Bucket> usersList = filterBucketsByUser(Bucket.jsonStringToBuckets(cookieValue), userId);
+            List<Bucket> usersList = new ArrayList<>(filterBucketsByUser(Bucket.jsonStringToBuckets(cookieValue), userId));
 
             boolean isExist = false;
-            for(Bucket b : usersList) {
-                if(b.getMenuId().equals(menuId)) {
-                    usersList.remove(b);
+            for(int i=0; i<usersList.size(); i++) {
+                if(usersList.get(i).getMenuId().equals(menuId)) {
+                    usersList.remove(usersList.get(i));
                     isExist = true;
                     break;
                 }
