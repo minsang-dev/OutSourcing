@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
-    @Query("SELECT m FROM Menu m WHERE m.store.id = :storeId AND m.deletedAt IS NOT NULL")
+    @Query("SELECT m FROM Menu m WHERE m.store.id = :storeId AND m.deletedAt IS NULL")
 
     List<Menu> findAllMenuByStoreId(@Param("storeId") Long storeId);
 
