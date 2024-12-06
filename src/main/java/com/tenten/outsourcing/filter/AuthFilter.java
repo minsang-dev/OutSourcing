@@ -21,7 +21,12 @@ import org.springframework.util.PatternMatchUtils;
 public class AuthFilter implements Filter {
 
   private final String[] FOR_OWNER = {
-      "/api/test/owner"
+      "/api/orders/status/*" //Order 구분완료
+  };
+
+  private final String[] FOR_OWNER_ONLY_GET = {
+      "/api/stores/*",
+      "/api/stores/\\d/menus"
   };
 
   @Override
@@ -32,23 +37,29 @@ public class AuthFilter implements Filter {
 
     HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
     String requestURI = httpRequest.getRequestURI();
+    String method = httpRequest.getMethod();
     HttpSession session = httpRequest.getSession(false);
 
-    if(session !=null) {
+    if(session != null) {
       SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
-      if(sessionDto == null) {
-        return;
+
+      if (!"GET".equalsIgnoreCase(method) && isForOwnerOnlyGet(requestURI) && !Role.OWNER.equals(
+          sessionDto.getRole())) {
+        throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
       }
+
       if (isForOwner(requestURI) && !Role.OWNER.equals(sessionDto.getRole())) {
         throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
-
       }
     }
-
     filterChain.doFilter(servletRequest, servletResponse);
   }
 
   private boolean isForOwner(String requestUrl){
     return PatternMatchUtils.simpleMatch(FOR_OWNER, requestUrl);
+  }
+
+  private boolean isForOwnerOnlyGet(String requestUrl){
+    return PatternMatchUtils.simpleMatch(FOR_OWNER_ONLY_GET, requestUrl);
   }
 }

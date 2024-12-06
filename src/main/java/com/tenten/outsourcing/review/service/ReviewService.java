@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.tenten.outsourcing.exception.ErrorCode.NO_DELIVERY_ALREADY;
+import static com.tenten.outsourcing.exception.ErrorCode.NO_REVIEW_FOR_OWNER;
 
 @Service
 @RequiredArgsConstructor
@@ -40,16 +41,13 @@ public class ReviewService {
         User user = userService.findByIdOrElseThrow(userId);
         Order order = orderService.findOrderByIdOrElseThrow(reviewRequestDto.getOrderId());
         Store store = storeService.findById(order.getStore().getId());
+        checkOwner(user.getId(), store.getUser().getId());
         if (!DeliveryStatus.DELIVERED.equals(order.getStatus())) {
             throw new NoAuthorizedException(NO_DELIVERY_ALREADY);
         }
         Review review = new Review(user, store, order, reviewRequestDto.getRating(), reviewRequestDto.getContent());
         reviewRepository.save(review);
-        return new ReviewResponseDto(
-                review.getUser().getName(),
-                review.getRating(),
-                review.getContent()
-        );
+        return ReviewResponseDto.toDto(review);
     }
 
     public List<ReviewResponseDto> getAll(Long userId, Long orderId, Integer lowRating, Integer highRating, Boolean sortRating, Pageable pageable) {
@@ -61,14 +59,6 @@ public class ReviewService {
                 + "where r.user.id != " + userId + " "
             + "and r.store.id = " + order.getStore().getId() + " ";
         query += " and r.rating between " + lowRating + " and " + highRating + " ";
-
-//        if (lowRating != null && highRating != null) {
-//            query += " and r.rating between " + lowRating + " and " + highRating + " ";
-//        } else if (lowRating != null) {
-//            query += " and r.rating >= " + lowRating + " ";
-//        } else if (highRating != null) {
-//            query += " and r.rating <= " + highRating + " ";
-//        }
         if (sortRating) {
             query += " order by r.rating desc, r.createdAt desc ";
         } else {
@@ -83,5 +73,11 @@ public class ReviewService {
         return reviewList.stream()
                 .map(ReviewResponseDto::toDto)
                 .toList();
+    }
+
+    private void checkOwner(Long userId, Long ownerId) {
+        if(userId.equals(ownerId)){
+            throw new NoAuthorizedException(NO_REVIEW_FOR_OWNER);
+        }
     }
 }

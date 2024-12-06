@@ -45,6 +45,8 @@ public class Review extends BaseEntity {
 
   private String content;
 
+  private Long parents;
+
   public Review(User user, Store store, Order order, Integer rating, String content) {
     this.user = user;
     this.store = store;
