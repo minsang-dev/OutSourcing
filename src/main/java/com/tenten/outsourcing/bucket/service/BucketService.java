@@ -5,7 +5,6 @@ import com.tenten.outsourcing.bucket.dto.BucketResponseDto;
 import com.tenten.outsourcing.bucket.entity.Bucket;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -90,24 +90,24 @@ public class BucketService {
     /**
      * 장바구니 삭제. Count 무관하게 메뉴 통으로 삭제
      *
-     * @param userId 유저 식별자
+     * @param userId      유저 식별자
      * @param cookieValue 쿠키 값
-     * @param menuId 삭제할 메뉴 식별자
+     * @param menuId      삭제할 메뉴 식별자
      */
     public String deleteBucket(Long userId, String cookieValue, Long menuId) {
         try {
             List<Bucket> usersList = new ArrayList<>(filterBucketsByUser(Bucket.jsonStringToBuckets(cookieValue), userId));
 
             boolean isExist = false;
-            for(int i=0; i<usersList.size(); i++) {
-                if(usersList.get(i).getMenuId().equals(menuId)) {
+            for (int i = 0; i < usersList.size(); i++) {
+                if (usersList.get(i).getMenuId().equals(menuId)) {
                     usersList.remove(usersList.get(i));
                     isExist = true;
                     break;
                 }
             }
 
-            if(!isExist) {
+            if (!isExist) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
 
@@ -126,6 +126,6 @@ public class BucketService {
      * @return {@code userId}에 해당하는 장바구니 목록
      */
     public List<Bucket> filterBucketsByUser(List<Bucket> list, Long userId) {
-        return list.stream().filter(b -> b.getUserId().equals(userId)).toList();
+        return list.stream().filter(b -> b.getUserId().equals(userId)).collect(Collectors.toList());
     }
 }
