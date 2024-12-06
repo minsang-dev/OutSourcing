@@ -28,11 +28,13 @@ public class Menu extends BaseEntity {
   @Column(length = 25)
   private String menuName;
 
+  @Column(length = 225)
   private String menuPictureUrl;
 
   @Min(value = 0)
   private Integer price;
 
+  @Column(length = 50)
   private LocalDateTime deletedAt;
 
   public Menu() { }

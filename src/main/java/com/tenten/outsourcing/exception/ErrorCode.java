@@ -55,6 +55,7 @@ public enum ErrorCode {
     NO_REVIEW_COMMENT_FOR_OWNER("해당 가게 사장님만 리뷰에 답글을 작성할 수 없습니다.", HttpStatus.UNAUTHORIZED),
     NO_AUTHOR_OWNER_PAGE("오너만 접근 가능한 페이지입니다.", HttpStatus.UNAUTHORIZED),
     NO_AUTHOR_ORDER("해당 주문 정보에 대한 접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+
     private final String message;
     private final HttpStatus httpStatus;
 
