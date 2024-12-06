@@ -5,6 +5,7 @@ import com.tenten.outsourcing.menu.dto.*;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.service.MenuService;
 import com.tenten.outsourcing.user.dto.SessionDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class MenuController {
     @PostMapping
     public ResponseEntity<MenuResponseDto> createMenu(
             @PathVariable Long storeId,
-            @RequestBody MenuRequestDto requestDto,
+            @Valid @RequestBody MenuRequestDto requestDto,
             @SessionAttribute(name= LoginStatus.LOGIN_USER) SessionDto session
 
             ) {
@@ -62,7 +63,7 @@ public class MenuController {
     public ResponseEntity<MenuUpdateResponseDto> updateMenu(
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuUpdateRequestDto requestDto,
+            @Valid @RequestBody MenuUpdateRequestDto requestDto,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
 
     ) {
@@ -85,7 +86,7 @@ public class MenuController {
     public ResponseEntity<MenuResponseDto> deleteMenu(
             @PathVariable Long storeId,
             @PathVariable Long menuId,
-            @RequestBody MenuDeleteRequestDto requestDto,
+            @Valid @RequestBody MenuDeleteRequestDto requestDto,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
 
     ) {
