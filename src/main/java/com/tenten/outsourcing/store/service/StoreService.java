@@ -4,7 +4,6 @@ import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.dto.MenuResponseDto;
-import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
 import com.tenten.outsourcing.store.dto.StoreRequestDto;
