@@ -3,6 +3,7 @@ package com.tenten.outsourcing.store.service;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
+import com.tenten.outsourcing.menu.dto.MenuResponseDto;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.store.dto.StoreDetailResponseDto;
@@ -43,7 +44,16 @@ public class StoreService {
             throw new InvalidInputException(STORE_REGISTRATION_LIMITED);
         }
 
-        Store store = storeRepository.save(new Store(requestDto, findUser));
+        Store store = storeRepository.save(new Store(
+                requestDto.getStoreImageUrl(),
+                requestDto.getName(),
+                requestDto.getAddress(),
+                requestDto.getPhoneNumber(),
+                requestDto.getMinAmount(),
+                requestDto.getOpenTime(),
+                requestDto.getCloseTime(),
+                findUser
+        ));
 
         return new StoreResponseDto(store);
 
@@ -61,7 +71,18 @@ public class StoreService {
         Store findStore = storeRepository.findById(storeId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STORE));
         validateDeleted(findStore);
 
-        List<Menu> allMenu = menuRepository.findAllMenuByStoreId(storeId);
+        List<MenuResponseDto> allMenu = menuRepository.findAllMenuByStoreId(storeId)
+                .stream()
+                .map(menu -> {
+                    return new MenuResponseDto(
+                            menu.getId(),
+                            menu.getStore().getId(),
+                            menu.getMenuName(),
+                            menu.getMenuPictureUrl(),
+                            menu.getPrice(),
+                            menu.getCreatedAt()
+                    );
+                }).toList();
 
         return new StoreDetailResponseDto(findStore, allMenu);
     }
@@ -74,7 +95,13 @@ public class StoreService {
         validateDeleted(findStore);
 
         if (findUser.getId().equals(findStore.getUser().getId())) {
-            findStore.updateStoreInformation(requestDto);
+            findStore.updateStoreInformation(
+                    requestDto.getName(),
+                    requestDto.getOpenTime(),
+                    requestDto.getCloseTime(),
+                    requestDto.getMinAmount(),
+                    requestDto.getStoreImageUrl()
+            );
         } else {
             throw new NoAuthorizedException(NO_AUTHOR_OWNER_PAGE);
         }

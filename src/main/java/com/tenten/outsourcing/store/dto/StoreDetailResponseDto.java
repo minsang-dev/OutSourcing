@@ -1,5 +1,6 @@
 package com.tenten.outsourcing.store.dto;
 
+import com.tenten.outsourcing.menu.dto.MenuResponseDto;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.store.entity.Store;
 import lombok.Getter;
@@ -23,9 +24,9 @@ public class StoreDetailResponseDto {
 
     private String storeImageUrl;
 
-    private List<Menu> menus;
+    private List<MenuResponseDto> menus;
 
-    public StoreDetailResponseDto(Store store, List<Menu> menus) {
+    public StoreDetailResponseDto(Store store, List<MenuResponseDto> menus) {
         this.name = store.getName();
         this.address = store.getAddress();
         this.openTime = store.getOpenTime();
