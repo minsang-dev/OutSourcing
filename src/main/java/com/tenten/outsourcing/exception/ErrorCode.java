@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     //InvalidInputException
-    //비밀번호 변경 시 이전 비밀번호와 같은 비밀번호를 사용했을 때 출력하는 오류 메시지
-    SAME_PASSWORD("비밀번호는 다른 비밀번호를 사용하여야합니다.", HttpStatus.BAD_REQUEST),
     //비밀번호가 틀렸을 때 출력하는 오류 메시지
     WRONG_PASSWORD("비밀 번호가 틀렸습니다.", HttpStatus.BAD_REQUEST),
     //아이디 비밀번호가 잘못됨
@@ -30,6 +28,7 @@ public enum ErrorCode {
     NOT_FOUND_MENU("메뉴를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_ORDER("주문 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_STORE("가게를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_REVIEW("리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
 
     // InternalServerException
@@ -41,6 +40,8 @@ public enum ErrorCode {
     // DuplicatedException
     //중복된 이메일로 가일 할 때 출력하는 오류 메시지
     EMAIL_EXIST("중복된 아이디 입니다.", HttpStatus.BAD_REQUEST),
+    REVIEW_COMMENT_EXIST("답글은 한개만 작성할 수 있습니다.", HttpStatus.BAD_REQUEST),
+    REVIEW_EXIST("리뷰는 한개만 작성할 수 있습니다.", HttpStatus.BAD_REQUEST),
 
     // NoAuthorizedException
     //로그인이 안 되었을 떄 출력하는 오류 메시지
@@ -51,6 +52,7 @@ public enum ErrorCode {
     NO_AUTHOR_CHANGE("수정, 삭제는 작성자만 할 수 있습니다.", HttpStatus.UNAUTHORIZED),
     NO_DELIVERY_ALREADY("배달이 완료된 주문만 리뷰 작성 가능합니다.", HttpStatus.UNAUTHORIZED),
     NO_REVIEW_FOR_OWNER("해당 가게 사장님은 리뷰를 작성할 수 없습니다.", HttpStatus.UNAUTHORIZED),
+    NO_REVIEW_COMMENT_FOR_OWNER("해당 가게 사장님만 리뷰에 답글을 작성할 수 없습니다.", HttpStatus.UNAUTHORIZED),
     NO_AUTHOR_OWNER_PAGE("오너만 접근 가능한 페이지입니다.", HttpStatus.UNAUTHORIZED),
     NO_AUTHOR_ORDER("해당 주문 정보에 대한 접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 
