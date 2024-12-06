@@ -107,6 +107,7 @@ public class MenuService {
                 orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MENU));
 
         findMenu.deleteMenu();
+        menuRepository.save(findMenu);
     }
 
     /**
