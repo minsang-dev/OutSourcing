@@ -1,8 +1,12 @@
 package com.tenten.outsourcing;
 
+import com.tenten.outsourcing.common.DeliveryStatus;
+import com.tenten.outsourcing.common.DeliveryType;
 import com.tenten.outsourcing.common.Role;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.order.entity.Order;
+import com.tenten.outsourcing.order.repository.OrderRepository;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
 import com.tenten.outsourcing.user.entity.User;
@@ -27,6 +31,8 @@ public class DataInitializer {
     private StoreRepository storeRepository;
     @Autowired
     private MenuRepository menuRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @PostConstruct
     public void init() {
@@ -37,10 +43,13 @@ public class DataInitializer {
 
         Menu menu = new Menu(store, "초코비", 8000);
 
+        Order order = new Order(store, user, menu, 100, "content", DeliveryType.DELIVERY, DeliveryStatus.DELIVERED);
+
         userRepository.save(owner);
         userRepository.save(user);
         storeRepository.save(store);
         menuRepository.save(menu);
+        orderRepository.save(order);
 
         log.info("======= add column =======");
     }

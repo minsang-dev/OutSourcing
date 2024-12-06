@@ -10,19 +10,19 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class ExceptionResponseDto {
 
-  private static final ObjectMapper objectmapper = new ObjectMapper();
+    private static final ObjectMapper objectmapper = new ObjectMapper();
 
-  private HttpStatus httpStatus;
+    private HttpStatus httpStatus;
 
-  private String message;
+    private String message;
 
-  public ExceptionResponseDto(ErrorCode errorCode) {
-    this.message = errorCode.getMessage();
-    this.httpStatus = errorCode.getHttpStatus();
-  }
+    public ExceptionResponseDto(ErrorCode errorCode) {
+        this.message = errorCode.getMessage();
+        this.httpStatus = errorCode.getHttpStatus();
+    }
 
-  public String convertToJson() throws JsonProcessingException {
-    return objectmapper.writeValueAsString(this);
-  }
+    public String convertToJson() throws JsonProcessingException {
+        return objectmapper.writeValueAsString(this);
+    }
 
 }

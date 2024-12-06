@@ -1,7 +1,10 @@
 package com.tenten.outsourcing.review.dto;
 
 import com.tenten.outsourcing.review.entity.Review;
+
+import java.util.List;
 import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,32 +12,54 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReviewResponseDto {
 
-  private Long reviewId;
+    // review.getId
+    private Long reviewId;
 
-  private Long userId;
+    // review.getUser().getId
+    private Long userId;
 
-  private Long storeId;
+    // review.getStore().getId
+    private Long storeId;
 
-  private Long orderId;
+    // review.getOrder().getId
+    private Long orderId;
 
-  private String userName;
+    // review.getUser().getUserName
+    private String userName;
 
-  private Integer rating;
+    // review.getRating()
+    private Integer rating;
 
-  private String content;
+    // review.getContent
+    private String content;
 
-  private LocalDateTime createAt;
+    private ReviewCommentResponsetDto comments;
 
-  public static ReviewResponseDto toDto(Review review) {
-    return new ReviewResponseDto(
-        review.getId(),
-        review.getUser().getId(),
-        review.getStore().getId(),
-        review.getOrder().getId(),
-        review.getUser().getName(),
-        review.getRating(),
-        review.getContent(),
-        review.getCreatedAt()
-    );
-  }
+    // review.getCreateAt
+    private LocalDateTime createAt;
+
+    public static ReviewResponseDto toDto(Review review, Review commentReview) {
+        ReviewCommentResponsetDto comment = null;
+
+        // 대댓글이 있다면 Dto로 변환
+        if (commentReview != null) {
+            comment = new ReviewCommentResponsetDto(
+                    commentReview.getUser().getId(),
+                    commentReview.getContent(),
+                    commentReview.getUpdatedAt()
+            );
+        }
+
+        return new ReviewResponseDto(
+                review.getId(),
+                review.getUser().getId(),
+                review.getStore().getId(),
+                review.getOrder().getId(),
+                review.getUser().getName(),
+                review.getRating(),
+                review.getContent(),
+                comment,
+                review.getCreatedAt()
+        );
+    }
 }
