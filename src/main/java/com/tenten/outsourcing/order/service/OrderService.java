@@ -3,9 +3,11 @@ package com.tenten.outsourcing.order.service;
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
 import com.tenten.outsourcing.exception.InvalidInputException;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.menu.service.MenuService;
 import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.entity.Order;
@@ -13,13 +15,12 @@ import com.tenten.outsourcing.order.repository.OrderRepository;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.user.entity.User;
 import com.tenten.outsourcing.user.repository.UserRepository;
+import com.tenten.outsourcing.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -32,9 +33,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    // TODO: Service 사용하도록 수정
-    private final UserRepository userRepository;
-    private final MenuRepository menuRepository;
+    private final UserService userService;
+    private final MenuService menuService;
 
     /**
      * 주문 생성 메서드.
@@ -43,10 +43,10 @@ public class OrderService {
      * @param userId 로그인한 유저 식별자
      */
     @Transactional
-    public OrderResponseDto createOrder(OrderRequestDto dto, Long userId) {
+    public OrderResponseDto createOrder(Long menuId, DeliveryType type, String request, Long userId) {
 
-        User findUser = userRepository.findById(userId).orElseThrow();
-        Menu findMenu = menuRepository.findById(dto.getMenuId()).orElseThrow();
+        User findUser = userService.findByIdOrElseThrow(userId);
+        Menu findMenu = menuService.findByIdOrElseThrow(menuId);
         Store store = findMenu.getStore();
 
         // 가게 운영 시간이 아닐시
@@ -62,9 +62,8 @@ public class OrderService {
         }
 
         Integer totalPrice = findMenu.getPrice();
-        DeliveryType type = dto.getType();
 
-        Order order = new Order(store, findUser, findMenu, totalPrice, dto.getRequest(), type, DeliveryStatus.ACCEPTED);
+        Order order = new Order(store, findUser, findMenu, totalPrice, request, type, DeliveryStatus.ACCEPTED);
         Order savedOrder = orderRepository.save(order);
 
         return new OrderResponseDto(savedOrder);
@@ -77,35 +76,37 @@ public class OrderService {
      * @param loginId 로그인한 유저 식별자
      */
     @Transactional
-    public void updateOrderStatus(Long orderId, Long loginId) {
+    public String updateOrderStatus(Long orderId, Long loginId) {
 
-        User findUser = userRepository.findById(loginId).orElseThrow();
+        User findUser = userService.findByIdOrElseThrow(loginId);
         Order findOrder = findOrderByIdOrElseThrow(orderId);
 
         // 해당 주문을 받은 점주가 아닌 경우
         if (!findOrder.getStore().getUser().equals(findUser)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new NoAuthorizedException(NO_AUTHOR_ORDER);
         }
 
         DeliveryStatus nextStatus = DeliveryStatus.findNextStatus(findOrder.getStatus());
 
         findOrder.updateStatus(nextStatus);
         orderRepository.save(findOrder);
+
+        return nextStatus.getText();
     }
 
     /**
-     * 주문 단건 조회. 자신의 주문 내역만 조회 가능
+     * 주문 단건 조회. 본인의 주문 내역이거나 주문을 받은 사장일 때만 조회 가능
      *
      * @param loginId 로그인한 유저
      */
     public OrderResponseDto findOrder(Long orderId, Long loginId) {
 
         Order findOrder = findOrderByIdOrElseThrow(orderId);
-        if (!findOrder.getUser().getId().equals(loginId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (findOrder.getUser().getId().equals(loginId) || findOrder.getStore().getUser().getId().equals(loginId)) {
+            return new OrderResponseDto(findOrder);
+        } else {
+            throw new NoAuthorizedException(NO_AUTHOR_ORDER);
         }
-
-        return new OrderResponseDto(findOrder);
     }
 
     /**

@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/stores")
 @RequiredArgsConstructor
 public class StoreController {
 
     private final StoreService storeService;
 
-    @PostMapping("/stores")
+    @PostMapping
     public ResponseEntity<StoreResponseDto> create(
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @Valid @RequestBody StoreRequestDto requestDto
@@ -29,7 +29,7 @@ public class StoreController {
         return new ResponseEntity<>(storeService.create(session, requestDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/stores")
+    @GetMapping
     public ResponseEntity<List<StoreResponseDto>> findByName(
             @RequestParam String name,
             @PageableDefault(page = 1) Pageable pageable
@@ -37,12 +37,12 @@ public class StoreController {
         return new ResponseEntity<>(storeService.findByName(name, pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/stores/{storeId}")
+    @GetMapping("/{storeId}")
     public ResponseEntity<StoreDetailResponseDto> findDetailById(@PathVariable Long storeId) {
         return new ResponseEntity<>(storeService.findDetailById(storeId), HttpStatus.OK);
     }
 
-    @PatchMapping("/stores/{storeId}")
+    @PatchMapping("{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateById(
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
             @PathVariable Long storeId,
@@ -51,7 +51,7 @@ public class StoreController {
         return new ResponseEntity<>(storeService.updateById(session, storeId, requestDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/stores/{storeId}")
+    @DeleteMapping("{storeId}")
     public ResponseEntity<Void> deleteById(@SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session, @PathVariable Long storeId) {
         storeService.deleteById(session, storeId);
         return new ResponseEntity<>(HttpStatus.OK);

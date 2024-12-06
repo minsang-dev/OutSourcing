@@ -26,55 +26,63 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Store extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-  private String storeImageUrl;
+    private String storeImageUrl;
 
-  @Column(length = 25)
-  private String name;
+    @Column(length = 25)
+    private String name;
 
-  private String address;
+    private String address;
 
-  @Column(length = 25)
-  private String phoneNumber;
+    @Column(length = 25)
+    private String phoneNumber;
 
-  private Integer minAmount;
+    private Integer minAmount;
 
-  @JsonFormat(pattern = "hh:mm:ss")
-  private LocalTime openTime;
+    @JsonFormat(pattern = "hh:mm:ss")
+    private LocalTime openTime;
 
-  @JsonFormat(pattern = "hh:mm:ss")
-  private LocalTime closeTime;
+    @JsonFormat(pattern = "hh:mm:ss")
+    private LocalTime closeTime;
 
-  private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
 
-  public Store(StoreRequestDto requestDto, User user) {
-      this.user = user;
-      this.storeImageUrl = requestDto.getStoreImageUrl();
-      this.name = requestDto.getName();
-      this.address = requestDto.getAddress();
-      this.phoneNumber = requestDto.getPhoneNumber();
-      this.minAmount = requestDto.getMinAmount();
-      this.openTime = requestDto.getOpenTime();
-      this.closeTime = requestDto.getCloseTime();
-  }
+    public Store(String storeImageUrl,
+                 String name,
+                 String address,
+                 String phoneNumber,
+                 Integer minAmount,
+                 LocalTime openTime,
+                 LocalTime closeTime,
+                 User user
+    ) {
+        this.user = user;
+        this.storeImageUrl = storeImageUrl;
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.minAmount = minAmount;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+    }
 
-    public void updateStoreInformation(StoreUpdateRequestDto requestDto) {
-      this.name = requestDto.getName();
-      this.openTime = requestDto.getOpenTime();
-      this.closeTime = requestDto.getCloseTime();
-      this.minAmount = requestDto.getMinAmount();
-      this.storeImageUrl = requestDto.getStoreImageUrl();
+    public void updateStoreInformation(String name, LocalTime openTime, LocalTime closeTime, Integer minAmount, String storeImageUrl) {
+        this.name = name;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.minAmount = minAmount;
+        this.storeImageUrl = storeImageUrl;
     }
 
     public void softDelete() {
-      this.deletedAt = LocalDateTime.now();
+        this.deletedAt = LocalDateTime.now();
     }
 
     public Store(User user, String name, String address, String phoneNumber, Integer minAmount, LocalTime openTime, LocalTime closeTime) {
