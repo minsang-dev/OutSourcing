@@ -3,6 +3,7 @@ package com.tenten.outsourcing.order.service;
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
 import com.tenten.outsourcing.exception.InvalidInputException;
+import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
@@ -17,9 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -77,35 +76,37 @@ public class OrderService {
      * @param loginId 로그인한 유저 식별자
      */
     @Transactional
-    public void updateOrderStatus(Long orderId, Long loginId) {
+    public String updateOrderStatus(Long orderId, Long loginId) {
 
         User findUser = userRepository.findById(loginId).orElseThrow();
         Order findOrder = findOrderByIdOrElseThrow(orderId);
 
         // 해당 주문을 받은 점주가 아닌 경우
         if (!findOrder.getStore().getUser().equals(findUser)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new NoAuthorizedException(NO_AUTHOR_ORDER);
         }
 
         DeliveryStatus nextStatus = DeliveryStatus.findNextStatus(findOrder.getStatus());
 
         findOrder.updateStatus(nextStatus);
         orderRepository.save(findOrder);
+
+        return nextStatus.getText();
     }
 
     /**
-     * 주문 단건 조회. 자신의 주문 내역만 조회 가능
+     * 주문 단건 조회. 본인의 주문 내역이거나 주문을 받은 사장일 때만 조회 가능
      *
      * @param loginId 로그인한 유저
      */
     public OrderResponseDto findOrder(Long orderId, Long loginId) {
 
         Order findOrder = findOrderByIdOrElseThrow(orderId);
-        if (!findOrder.getUser().getId().equals(loginId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (findOrder.getUser().getId().equals(loginId) || findOrder.getStore().getUser().getId().equals(loginId)) {
+            return new OrderResponseDto(findOrder);
+        } else {
+            throw new NoAuthorizedException(NO_AUTHOR_ORDER);
         }
-
-        return new OrderResponseDto(findOrder);
     }
 
     /**

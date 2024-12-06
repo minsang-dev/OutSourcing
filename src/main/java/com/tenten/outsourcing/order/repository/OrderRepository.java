@@ -17,6 +17,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * @param userId 유저 식별자
      * @return 주문 목록
      */
-    @Query("SELECT o FROM Order o, User u WHERE u.id = :userId ORDER BY o.createdAt DESC")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.createdAt DESC")
     List<Order> findAllOrdersByUserId(@Param("userId") Long userId, Pageable pageable);
 }
