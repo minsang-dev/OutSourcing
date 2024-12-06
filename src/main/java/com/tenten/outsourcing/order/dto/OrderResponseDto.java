@@ -22,6 +22,8 @@ public class OrderResponseDto {
 
     private final String type;
 
+    private final String status;
+
     private final LocalDateTime createdAt;
 
     public OrderResponseDto(Order order) {
@@ -31,6 +33,7 @@ public class OrderResponseDto {
         this.totalPrice = order.getTotalPrice();
         this.request = order.getRequestMessage();
         this.type = order.getType().getText();
+        this.status = order.getStatus().getText();
         this.createdAt = order.getCreatedAt();
     }
 

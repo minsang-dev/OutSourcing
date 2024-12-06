@@ -4,7 +4,6 @@ import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.common.PagingResponseDto;
 import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
-import com.tenten.outsourcing.order.dto.OrderStatusRequestDto;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.user.dto.SessionDto;
 import jakarta.validation.Valid;
@@ -31,7 +30,7 @@ public class OrderController {
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        OrderResponseDto orderDto = orderService.createOrder(dto, session.getId());
+        OrderResponseDto orderDto = orderService.createOrder(dto.getMenuId(), dto.getType(), dto.getRequest(), session.getId());
         return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
     }
 
@@ -45,12 +44,11 @@ public class OrderController {
     @PatchMapping("/status/{orderId}")
     public ResponseEntity<String> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderStatusRequestDto dto,
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        orderService.updateOrderStatus(orderId, session.getId());
-        return ResponseEntity.ok().body("상태가 변경되었습니다: " + dto.getStatus().getText());
+        String status = orderService.updateOrderStatus(orderId, session.getId());
+        return ResponseEntity.ok().body("상태가 변경되었습니다: " + status);
     }
 
     /**
