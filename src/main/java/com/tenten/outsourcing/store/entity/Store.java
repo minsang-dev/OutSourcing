@@ -76,4 +76,14 @@ public class Store extends BaseEntity {
     public void softDelete() {
       this.deletedAt = LocalDateTime.now();
     }
+
+    public Store(User user, String name, String address, String phoneNumber, Integer minAmount, LocalTime openTime, LocalTime closeTime) {
+        this.user = user;
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.minAmount = minAmount;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+    }
 }
