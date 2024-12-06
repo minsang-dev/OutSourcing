@@ -76,15 +76,6 @@ public class UserService {
     }
   }
 
-  public SessionDto getSession(HttpServletRequest request){
-    HttpSession session = request.getSession(false);
-    if(session == null){
-      throw new InternalServerException(SESSION_TIMEOUT);
-    }
-    SessionDto sessionDto = (SessionDto) session.getAttribute(LoginStatus.LOGIN_USER);
-    return sessionDto;
-  }
-
   private void checkEmailDulicated(String email){
     if(userRepository.existsByEmail(email)){
       throw new DuplicatedException(EMAIL_EXIST);

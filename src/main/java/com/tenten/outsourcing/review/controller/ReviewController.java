@@ -21,6 +21,13 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    /**
+     * 리뷰 생성
+     * 해당 가게의 사장은 작성 불가능
+     * @param reviewRequestDto
+     * @param session
+     * @return
+     */
     @PostMapping
     public ResponseEntity<ReviewResponseDto> save(
             @Valid @RequestBody ReviewRequestDto reviewRequestDto,
@@ -30,6 +37,16 @@ public class ReviewController {
         return ResponseEntity.ok().body(reviewResponseDto);
     }
 
+    /**
+     * 리뷰 조회
+     *
+     * @param orderId       주문 아이디
+     * @param lowRating     조회시 최소별점
+     * @param highRating    조회시 최대별점
+     * @param sortRating    별점순 정렬여부
+     * @param pageable
+     * @param session
+     */
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<List<ReviewResponseDto>> getAll(
             @PathVariable Long orderId,

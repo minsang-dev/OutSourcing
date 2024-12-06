@@ -18,7 +18,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +30,9 @@ public class LoginController {
 
   private final UserService userService;
 
+  /**
+   * 회원 가입
+   */
   @PostMapping("/sign-up")
   public ResponseEntity<UserResponseDto> signUp(
       @Valid @RequestBody UserRequestDto userRequestDto
@@ -38,8 +40,14 @@ public class LoginController {
     return ResponseEntity.ok().body(userService.signUp(userRequestDto));
   }
 
+  /**
+   * 로그인
+   * 
+   * @param loginRequestDto
+   * @param request
+   * @return loginResponseDto
+   */
   @PostMapping("/login")
-//  public ResponseEntity<UserResponseDto> login(
   public ResponseEntity<LoginResponseDto> login(
       @Valid @RequestBody LoginRequestDto loginRequestDto,
       HttpServletRequest request
@@ -59,6 +67,13 @@ public class LoginController {
     return ResponseEntity.ok().body(new LoginResponseDto("로그인 성공"));
   }
 
+  /**
+   * 
+   * 로그아웃
+   * 
+   * @param request
+   * @return 로그아웃 여부
+   */
   @PostMapping("/logout")
   public ResponseEntity<LoginResponseDto> logout(
       HttpServletRequest request
@@ -70,6 +85,13 @@ public class LoginController {
     return ResponseEntity.ok().body( new LoginResponseDto( "로그아웃 되었습니다."));
   }
 
+  /**
+   * 유저 삭제
+   * 
+   * @param deleteRequestDto
+   * @param request
+   * @return 삭제 여부
+   */
   @DeleteMapping("/users")
   public ResponseEntity<String> deleteUser(
       @Valid @RequestBody DeleteRequestDto deleteRequestDto,
@@ -80,12 +102,5 @@ public class LoginController {
     userService.deleteUser(sessionDto.getId(), deleteRequestDto.getPassword());
     session.invalidate();
     return ResponseEntity.ok().body("삭제 되었습니다.");
-  }
-
-  @GetMapping("/test/owner")
-  public ResponseEntity<String> testOwner(
-
-  ){
-    return null;
   }
 }
