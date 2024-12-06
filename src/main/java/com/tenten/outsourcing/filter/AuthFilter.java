@@ -25,8 +25,8 @@ public class AuthFilter implements Filter {
   };
 
   private final String[] FOR_OWNER_ONLY_GET = {
-      "/api/stores/*",  //GetMapping만 유저
-      "/api/stores/\\d/menus" //GetMapping만 유저
+      "/api/stores/*",
+      "/api/stores/\\d/menus"
   };
 
   @Override
