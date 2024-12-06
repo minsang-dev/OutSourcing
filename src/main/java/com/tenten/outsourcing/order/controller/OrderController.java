@@ -30,7 +30,7 @@ public class OrderController {
             @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
     ) {
 
-        OrderResponseDto orderDto = orderService.createOrder(dto, session.getId());
+        OrderResponseDto orderDto = orderService.createOrder(dto.getMenuId(), dto.getType(), dto.getRequest(), session.getId());
         return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
     }
 
