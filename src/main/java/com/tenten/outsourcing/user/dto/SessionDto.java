@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SessionDto {
 
-  private Long id;
+    private Long id;
 
-  private Role role;
+    private Role role;
 
 }
