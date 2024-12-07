@@ -16,6 +16,7 @@ import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Getter
@@ -23,35 +24,45 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Review extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "store_id")
-  private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
-  private Order order;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-  @Min(value = 0)
-  @Max(value = 5)
-  private Integer rating;
+    @Min(value = 0)
+    @Max(value = 5)
+    private Integer rating;
 
-  private String content;
+    private String content;
 
-  private Long parents;
+    private Long parents;
 
-  public Review(User user, Store store, Order order, Integer rating, String content) {
-    this.user = user;
-    this.store = store;
-    this.order = order;
-    this.rating = rating;
-    this.content = content;
-  }
+    public Review(User user, Store store, Order order, Integer rating, String content) {
+        this.user = user;
+        this.store = store;
+        this.order = order;
+        this.rating = rating;
+        this.content = content;
+        this.parents = null;
+    }
+
+    public Review(User user, Store store, Order order, String content, Long parents) {
+        this.user = user;
+        this.store = store;
+        this.order = order;
+        this.rating = null;
+        this.content = content;
+        this.parents = parents;
+    }
 }
