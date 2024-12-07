@@ -6,6 +6,7 @@ import com.tenten.outsourcing.menu.dto.MenuResponseDto;
 import com.tenten.outsourcing.menu.dto.MenuUpdateResponseDto;
 import com.tenten.outsourcing.menu.entity.Menu;
 import com.tenten.outsourcing.menu.repository.MenuRepository;
+import com.tenten.outsourcing.order.entity.BucketMenu;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.store.repository.StoreRepository;
 import com.tenten.outsourcing.user.entity.User;
@@ -125,5 +126,16 @@ public class MenuService {
         }
 
         return findStore;
+    }
+
+    /**
+     * 장바구니에 들어있는 메뉴 중 삭제되지 않은 메뉴 목록 반환
+     *
+     * @param bucketMenus 장바구니 메뉴 목록
+     * @return 삭제되지 않은 장바구니 내 Menu 목록
+     */
+    public List<Menu> findOrderedMenu(List<BucketMenu> bucketMenus) {
+        List<Long> bucketMenuIds = bucketMenus.stream().map(BucketMenu::getMenuId).toList();
+        return menuRepository.findMenusInBucket(bucketMenuIds);
     }
 }

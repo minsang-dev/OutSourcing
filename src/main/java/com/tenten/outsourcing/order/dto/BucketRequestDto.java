@@ -1,17 +1,18 @@
 package com.tenten.outsourcing.order.dto;
 
-import com.tenten.outsourcing.common.DeliveryType;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-public class OrderRequestDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class BucketRequestDto {
 
     @NotNull
     private Long storeId;
 
-    private String request;
-
     @NotNull
-    private DeliveryType type;
+    private Long menuId;
 }
