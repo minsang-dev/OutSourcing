@@ -1,4 +1,4 @@
-package com.tenten.outsourcing.bucket.dto;
+package com.tenten.outsourcing.order.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

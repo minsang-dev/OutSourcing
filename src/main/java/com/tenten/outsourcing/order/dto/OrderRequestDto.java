@@ -10,9 +10,6 @@ public class OrderRequestDto {
     @NotNull
     private Long storeId;
 
-    @NotNull
-    private Long menuId;
-
     private String request;
 
     @NotNull

@@ -1,17 +1,21 @@
 package com.tenten.outsourcing.order.controller;
 
+import com.tenten.outsourcing.common.CookieName;
 import com.tenten.outsourcing.common.LoginStatus;
 import com.tenten.outsourcing.common.PagingResponseDto;
 import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.service.OrderService;
 import com.tenten.outsourcing.user.dto.SessionDto;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -27,11 +31,12 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
             @RequestBody @Valid OrderRequestDto dto,
-            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session
+            @SessionAttribute(name = LoginStatus.LOGIN_USER) SessionDto session,
+            @CookieValue(name = CookieName.Bucket) Cookie cookie
     ) {
 
-        OrderResponseDto orderDto = orderService.createOrder(dto.getMenuId(), dto.getType(), dto.getRequest(), session.getId());
-        return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
+        OrderResponseDto ordersDto = orderService.createOrder(URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8), dto.getType(), dto.getRequest(), session.getId());
+        return new ResponseEntity<>(ordersDto, HttpStatus.CREATED);
     }
 
     /**

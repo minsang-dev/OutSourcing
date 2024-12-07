@@ -1,32 +1,40 @@
 package com.tenten.outsourcing.order.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tenten.outsourcing.common.DeliveryStatus;
 import com.tenten.outsourcing.common.DeliveryType;
+import com.tenten.outsourcing.common.Mapper;
 import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.entity.Menu;
-import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.menu.service.MenuService;
-import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
+import com.tenten.outsourcing.order.entity.Bucket;
+import com.tenten.outsourcing.order.entity.BucketMenu;
 import com.tenten.outsourcing.order.entity.Order;
+import com.tenten.outsourcing.order.entity.OrderMenu;
 import com.tenten.outsourcing.order.repository.OrderRepository;
 import com.tenten.outsourcing.store.entity.Store;
+import com.tenten.outsourcing.store.service.StoreService;
 import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.user.repository.UserRepository;
 import com.tenten.outsourcing.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tenten.outsourcing.exception.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -35,6 +43,8 @@ public class OrderService {
 
     private final UserService userService;
     private final MenuService menuService;
+    private final StoreService storeService;
+    private final BucketService bucketService;
 
     /**
      * 주문 생성 메서드.
@@ -43,12 +53,19 @@ public class OrderService {
      * @param userId 로그인한 유저 식별자
      */
     @Transactional
-    public OrderResponseDto createOrder(Long menuId, DeliveryType type, String request, Long userId) {
+    public OrderResponseDto createOrder(String cookieValue, DeliveryType type, String request, Long userId) {
 
+        Bucket bucket;
         User findUser = userService.findByIdOrElseThrow(userId);
-        Menu findMenu = menuService.findByIdOrElseThrow(menuId);
-        Store store = findMenu.getStore();
 
+        try {
+            bucket = Mapper.jsonStringToBucket(cookieValue);
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Store store = storeService.findById(bucket.getStoreId());
         // 가게 운영 시간이 아닐시
         if (LocalTime.now().isAfter(store.getCloseTime())
                 || LocalTime.now().isBefore(store.getOpenTime())
@@ -56,14 +73,32 @@ public class OrderService {
             throw new InvalidInputException(STORE_CLOSED);
         }
 
+        // 주문한 메뉴 목록을 찾고 bucket에서 삭제된 메뉴를 제거
+        List<Menu> menuList = menuService.findOrderedMenu(bucket.getBucketMenus());
+        bucket.removeDeletedMenus(menuList);
+
+        for (BucketMenu bm : bucket.getBucketMenus()) {
+            for (Menu m : menuList) {
+                if (bm.getMenuId().equals(m.getId())) {
+                    bm.placeMenu(m);
+                }
+            }
+        }
+
+        int totalPrice = bucket.getBucketMenus().stream().mapToInt(bm -> bm.getMenu().getPrice() * bm.getCount()).sum();
+        log.info(String.valueOf(totalPrice));
         // 최소 주문 금액 불충족시
-        if (findMenu.getPrice() < store.getMinAmount()) {
+        if (totalPrice < store.getMinAmount()) {
             throw new InvalidInputException(MIN_AMOUNT_NOT_MET);
         }
 
-        Integer totalPrice = findMenu.getPrice();
+        Order order = new Order(store, findUser, totalPrice, request, type, DeliveryStatus.ACCEPTED);
 
-        Order order = new Order(store, findUser, findMenu, totalPrice, request, type, DeliveryStatus.ACCEPTED);
+        List<OrderMenu> menus = new ArrayList<>();
+        for (BucketMenu bm : bucket.getBucketMenus()) {
+            menus.add(new OrderMenu(order, bm.getMenu(), bm.getCount()));
+        }
+        order.confirmMenus(menus);
         Order savedOrder = orderRepository.save(order);
 
         return new OrderResponseDto(savedOrder);

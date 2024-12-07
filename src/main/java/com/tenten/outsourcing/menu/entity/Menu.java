@@ -1,6 +1,7 @@
 package com.tenten.outsourcing.menu.entity;
 
 import com.tenten.outsourcing.common.BaseEntity;
+import com.tenten.outsourcing.order.entity.OrderMenu;
 import com.tenten.outsourcing.store.entity.Store;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,53 +18,57 @@ import java.time.LocalDateTime;
 @Table(name = "menu") // 테이블 이름 매핑
 public class Menu extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Setter
-  @ManyToOne
-  @JoinColumn(name = "store_id", nullable = false)
-  private Store store; // 가게 (ManyToOne 관계))
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store; // 가게 (ManyToOne 관계))
 
-  @Column(length = 25)
-  private String menuName;
+    @OneToMany(mappedBy = "menu")
+    private List<OrderMenu> orderMenus;
 
-  private String menuPictureUrl;
+    @Column(length = 25)
+    private String menuName;
 
-  @Min(value = 0)
-  private Integer price;
+    private String menuPictureUrl;
 
-  private LocalDateTime deletedAt;
+    @Min(value = 0)
+    private Integer price;
 
-  public Menu() { }
+    private LocalDateTime deletedAt;
 
-  public Menu(String menuName, String menuPictureUrl, Integer price) {
-    this.menuName = menuName;
-    this.menuPictureUrl = menuPictureUrl;
-    this.price = price;
-  }
+    public Menu() {
+    }
 
-  public Menu(String menuName, String menuPictureUrl, Integer price, Store findStore) {
-    this.menuName = menuName;
-    this.menuPictureUrl = menuPictureUrl;
-    this.price = price;
-    this.store = findStore;
-  }
+    public Menu(String menuName, String menuPictureUrl, Integer price) {
+        this.menuName = menuName;
+        this.menuPictureUrl = menuPictureUrl;
+        this.price = price;
+    }
 
-  public void updateMenu(String menuName, String menuPictureUrl, Integer price) {
-    this.menuName = menuName;
-    this.menuPictureUrl = menuPictureUrl;
-    this.price = price;
-  }
+    public Menu(String menuName, String menuPictureUrl, Integer price, Store findStore) {
+        this.menuName = menuName;
+        this.menuPictureUrl = menuPictureUrl;
+        this.price = price;
+        this.store = findStore;
+    }
 
-  public void deleteMenu() {
-    this.deletedAt = LocalDateTime.now();
-  }
+    public Menu(Store store, String menuName, Integer price) {
+        this.store = store;
+        this.menuName = menuName;
+        this.price = price;
+    }
 
-  public Menu(Store store, String menuName, Integer price) {
-    this.store = store;
-    this.menuName = menuName;
-    this.price = price;
-  }
+    public void updateMenu(String menuName, String menuPictureUrl, Integer price) {
+        this.menuName = menuName;
+        this.menuPictureUrl = menuPictureUrl;
+        this.price = price;
+    }
+
+    public void deleteMenu() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
