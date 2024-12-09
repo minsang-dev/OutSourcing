@@ -6,15 +6,12 @@ import com.tenten.outsourcing.exception.InvalidInputException;
 import com.tenten.outsourcing.exception.NoAuthorizedException;
 import com.tenten.outsourcing.exception.NotFoundException;
 import com.tenten.outsourcing.menu.entity.Menu;
-import com.tenten.outsourcing.menu.repository.MenuRepository;
 import com.tenten.outsourcing.menu.service.MenuService;
-import com.tenten.outsourcing.order.dto.OrderRequestDto;
 import com.tenten.outsourcing.order.dto.OrderResponseDto;
 import com.tenten.outsourcing.order.entity.Order;
 import com.tenten.outsourcing.order.repository.OrderRepository;
 import com.tenten.outsourcing.store.entity.Store;
 import com.tenten.outsourcing.user.entity.User;
-import com.tenten.outsourcing.user.repository.UserRepository;
 import com.tenten.outsourcing.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +45,6 @@ public class OrderService {
         User findUser = userService.findByIdOrElseThrow(userId);
         Menu findMenu = menuService.findByIdOrElseThrow(menuId);
         Store store = findMenu.getStore();
-
-        // 가게 운영 시간이 아닐시
         if (LocalTime.now().isAfter(store.getCloseTime())
                 || LocalTime.now().isBefore(store.getOpenTime())
         ) {
@@ -65,6 +60,8 @@ public class OrderService {
 
         Order order = new Order(store, findUser, findMenu, totalPrice, request, type, DeliveryStatus.ACCEPTED);
         Order savedOrder = orderRepository.save(order);
+        // 가게 운영 시간이 아닐시
+
 
         return new OrderResponseDto(savedOrder);
     }
